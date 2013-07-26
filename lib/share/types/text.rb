@@ -11,24 +11,6 @@ module Share
       class MissingInsertOrDelete < ArgumentError; end
       class DeletedDifferentTextFromSameRegion < StandardError; end
 
-      def inject(left, position, right)
-        left[0, position] + right + left[position, left.length]
-      end
-
-      def check_valid_component(component)
-        raise MissingPositionField.new(component) unless component[POSITION].is_a?(Fixnum)
-        insert_type = component[INSERT].class
-        delete_type = component[DELETE].class
-
-        raise MissingInsertOrDelete.new(component) unless component[INSERT] || component[DELETE]
-        raise NegativePositionError.new(component) unless component[POSITION] >= 0
-      end
-
-      def check_valid_operation(operation)
-        operation.each { |component| check_valid_component(component) }
-        true
-      end
-
       def apply(snapshot, operation)
         check_valid_operation operation
         operation.each do |component|
@@ -43,30 +25,6 @@ module Share
           end
         end
         snapshot
-      end
-
-      def _append(new_operation, component)
-        return if component[INSERT] == '' || component[DELETE] == ''
-        if new_operation.length == 0
-          new_operation.push component
-        else
-          last = new_operation.last
-          if last[INSERT] && component[INSERT] && last[POSITION] <= component[PATH] && component[PATH] <= (last[POSITION] + last[INSERT].length)
-            new_operation[new_operation.length - 1] = {
-              INSERT => inject(last[INSERT], component[POSITION] - last[POSITION], component[INSERT]),
-              POSITION => last[POSITION]
-            }
-          elsif last[DELETE] && component[DELETE] && component[POSITION] <= last[POSITION] && last[POSITION] <= (component[POSITION] + component[DELETE].length)
-            new_operation[new_operation.length - 1] = {
-              DELETE => inject(component[DELETE], last[POSITION] - component[POSITION], last[DELETE]),
-              POSITION => component[POSITION]
-            }
-          else
-            new_operation.push component
-          end
-        end
-      rescue StandardError => e
-        raise component.inspect
       end
 
       def compose(left, right)
@@ -100,6 +58,40 @@ module Share
         new_operation
       end
 
+      def transform_cursor(position, operation, side=nil)
+        insert_after = side == RIGHT
+        operation.each do |component|
+          position = transform_position position, component, insert_after
+        end
+        position
+      end
+
+      private
+
+      def _append(new_operation, component)
+        return if component[INSERT] == '' || component[DELETE] == ''
+        if new_operation.length == 0
+          new_operation.push component
+        else
+          last = new_operation.last
+          if last[INSERT] && component[INSERT] && last[POSITION] <= component[PATH] && component[PATH] <= (last[POSITION] + last[INSERT].length)
+            new_operation[new_operation.length - 1] = {
+              INSERT => inject(last[INSERT], component[POSITION] - last[POSITION], component[INSERT]),
+              POSITION => last[POSITION]
+            }
+          elsif last[DELETE] && component[DELETE] && component[POSITION] <= last[POSITION] && last[POSITION] <= (component[POSITION] + component[DELETE].length)
+            new_operation[new_operation.length - 1] = {
+              DELETE => inject(component[DELETE], last[POSITION] - component[POSITION], last[DELETE]),
+              POSITION => component[POSITION]
+            }
+          else
+            new_operation.push component
+          end
+        end
+      rescue StandardError => e
+        raise component.inspect
+      end
+
       def transform_position(position, component, insert_after=false)
         if component[INSERT]
           if component[POSITION] < position || (component[POSITION] == position && insert_after)
@@ -116,14 +108,6 @@ module Share
             position - component[DELETE].length
           end
         end
-      end
-
-      def transform_cursor(position, operation, side=nil)
-        insert_after = side == RIGHT
-        operation.each do |component|
-          position = transform_position position, component, insert_after
-        end
-        position
       end
 
       def transform_component(destination, component, other, side)
@@ -197,6 +181,7 @@ module Share
         end
       end
 
+
       def invert_component(component)
         if component[INSERT]
           {DELETE => component[INSERT], POSITION => component[POSITION]}
@@ -205,9 +190,30 @@ module Share
         end
       end
 
+
+      def inject(left, position, right)
+        left[0, position] + right + left[position, left.length]
+      end
+
+      def check_valid_component(component)
+        raise MissingPositionField.new(component) unless component[POSITION].is_a?(Fixnum)
+        insert_type = component[INSERT].class
+        delete_type = component[DELETE].class
+
+        raise MissingInsertOrDelete.new(component) unless component[INSERT] || component[DELETE]
+        raise NegativePositionError.new(component) unless component[POSITION] >= 0
+      end
+
+      def check_valid_operation(operation)
+        operation.each { |component| check_valid_component(component) }
+        true
+      end
+
       def invert(operation)
         operation.reverse.each { |component| invert_component component }
       end
+
+
     end
 
   end

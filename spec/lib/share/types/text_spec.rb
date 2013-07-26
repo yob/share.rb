@@ -129,5 +129,3 @@ describe Share::Types::Text do
     end
   end
 end
-
-
