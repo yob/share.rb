@@ -1,7 +1,6 @@
 require "thread_safe"
 require "thread"
 
-$LOAD_PATH.push File.join __FILE__, ".."
 module Share
   def self.logger
     @logger ||= begin 
