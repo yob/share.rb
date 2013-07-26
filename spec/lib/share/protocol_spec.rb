@@ -17,7 +17,7 @@ class TestAdapter < Share::Adapter::Abstract::Document
   end
 
   def type
-    Share::Types['json']
+    Share::Types::Text.new
   end
 
   def get_snapshot
