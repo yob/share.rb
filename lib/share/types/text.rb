@@ -1,8 +1,7 @@
 module Share
   module Types
-    module Text
-      extend ::Share::Types::Transform
-      extend self
+    class Text
+      include Transform
 
       INSERT = 'i'
       DELETE = 'd'
