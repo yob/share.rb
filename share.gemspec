@@ -1,6 +1,6 @@
 lib = File.expand_path('../lib/', __FILE__)
 $:.unshift lib unless $:.include?(lib)
- 
+
 require "share/version"
 
 Gem::Specification.new do |s|
@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.homepage    = "https://github.com/collintmiller/share.rb"
   s.summary     = "port of sharejs server to Ruby ( rack/thin )"
   s.description = "OT server for rack/rails applications. Includes JSON OT algorithms ported from ShareJS"
- 
+
   s.required_rubygems_version = ">= 1.3.6"
   s.files        = Dir.glob("{bin,lib}/**/*") #+ %w(LICENSE README.md ROADMAP.md CHANGELOG.md)
   s.require_path = 'lib'

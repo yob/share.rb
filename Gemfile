@@ -5,7 +5,7 @@ gemspec
 
 gem "rspec"
 gem "rake"
-gem "shoulda-matchers"  
+gem "shoulda-matchers"
 
 group :test do
   gem "guard"
