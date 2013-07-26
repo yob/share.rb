@@ -27,10 +27,9 @@ describe Share::Document do
   end
 
   describe "#apply_op" do
+    let!(:doc) { Share::Document.new("foo") }
 
-    context "with a new document" do
-      let!(:doc) { Share::Document.new("foo") }
-
+    context "with two in-order ops" do
       before do
         doc.apply_op(0, {'i' =>'foo', 'p' => 0})
         doc.apply_op(1, {'i' =>' bar', 'p' => 3})
@@ -42,7 +41,6 @@ describe Share::Document do
     end
 
     context "with an out-of-order version" do
-      let!(:doc) { Share::Document.new("foo") }
 
       it "should raise an exception" do
         lambda {
