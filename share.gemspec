@@ -1,11 +1,9 @@
 lib = File.expand_path('../lib/', __FILE__)
 $:.unshift lib unless $:.include?(lib)
 
-require "share/version"
-
 Gem::Specification.new do |s|
   s.name        = "share"
-  s.version     = Share::VERSION
+  s.version     = "0.0.5"
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Collin Miller"]
   s.email       = ["collintmiller@gmail.com"]
