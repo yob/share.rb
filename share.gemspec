@@ -19,4 +19,9 @@ Gem::Specification.new do |s|
   s.add_dependency "websocket-rack", "~> 0.4.0"
   s.add_dependency "activesupport", "~> 3.2.0"
   s.add_dependency "thread_safe", "~> 0.0.3"
+
+  s.add_development_dependency "rspec"
+  s.add_development_dependency "rake"
+  s.add_development_dependency "shoulda-matchers"
+  s.add_development_dependency "ir_b"
 end
