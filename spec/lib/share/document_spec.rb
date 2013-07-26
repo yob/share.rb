@@ -29,7 +29,7 @@ describe Share::Document do
   describe "#apply_op" do
     let!(:doc) { Share::Document.new("foo") }
 
-    context "with two in-order ops" do
+    context "with two in-order insert ops" do
       before do
         doc.apply_op(0, {'i' =>'foo', 'p' => 0})
         doc.apply_op(1, {'i' =>' bar', 'p' => 3})
@@ -37,6 +37,10 @@ describe Share::Document do
 
       it "should increment the version" do
         doc.version.should == 2
+      end
+
+      it "should update the value" do
+        doc.value.should == "foo bar"
       end
     end
 

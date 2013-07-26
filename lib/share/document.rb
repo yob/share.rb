@@ -29,6 +29,9 @@ module Share
 
     private
 
+    def apply(str, op)
+      Share::Types::Text.new.apply(str,[op])
+    end
+
   end
 end
-
