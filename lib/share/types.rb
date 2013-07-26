@@ -5,10 +5,8 @@ module Share
 
     require_relative "./types/transform"
     require_relative "./types/text"
-    require_relative "./types/json"
 
     TYPE_MAP = {
-      'json' => Types::JSON,
       'text' => Types::Text
     }
 
