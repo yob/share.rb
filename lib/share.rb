@@ -13,5 +13,5 @@ module Share
   require "share/repo/in_process"
   require "share/adapter/abstract"
 
-  require "share/types"
+  require "share/types/text"
 end
