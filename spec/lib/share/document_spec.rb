@@ -44,6 +44,21 @@ describe Share::Document do
       end
     end
 
+    context "with an in-order insert and delete op" do
+      before do
+        doc.apply_op(0, {'i' =>'foo', 'p' => 0})
+        doc.apply_op(1, {'d' =>'o', 'p' => 2})
+      end
+
+      it "should increment the version" do
+        doc.version.should == 2
+      end
+
+      it "should update the value" do
+        doc.value.should == "fo"
+      end
+    end
+
     context "with an out-of-order version" do
 
       it "should raise an exception" do
