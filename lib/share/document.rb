@@ -9,6 +9,7 @@ module Share
       @id = id
       @ops = []
       @value = ""
+      @type = Share::Types::Text.new
     end
 
     def version
@@ -30,7 +31,7 @@ module Share
     private
 
     def apply(str, op)
-      Share::Types::Text.new.apply(str,[op])
+      @type.apply(str,[op])
     end
 
   end
