@@ -7,6 +7,7 @@ module Share
   require "share/session"
   require "share/message"
   require "share/protocol"
+  require "share/document"
 
   require "share/repo/abstract"
   require "share/repo/in_process"
