@@ -1,4 +1,6 @@
 module Share
+  class StaleVersionError < ArgumentError; end
+
   class Document
     attr_reader :id
 
@@ -12,6 +14,8 @@ module Share
     end
 
     def apply_op(to_version, op)
+      raise StaleVersionError unless to_version == self.version
+
       @ops << op
     end
   end

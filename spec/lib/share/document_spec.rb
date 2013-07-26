@@ -37,5 +37,15 @@ describe Share::Document do
       end
     end
 
+    context "with an out-of-order version" do
+      let!(:doc) { Share::Document.new("foo") }
+
+      it "should raise an exception" do
+        lambda {
+          doc.apply_op(1, {'i' =>' bar', 'p' => 3})
+        }.should raise_error(Share::StaleVersionError)
+      end
+    end
+
   end
 end
