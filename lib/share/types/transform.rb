@@ -2,16 +2,9 @@ module Share::Types::Transform
   LEFT = 'left'
   RIGHT = 'right'
 
-  def logger
-    Share.logger
-  end
-
   def transform_component_x(left, right, dest_left, dest_right)
-    logger.debug :transform_component_x_left
     transform_component dest_left, left, right, 'left'
-    logger.debug :transform_component_x_right
     transform_component dest_right, right, left, 'right'
-    logger.debug "transformComponentX_end"
     nil
   end
 
@@ -31,10 +24,8 @@ module Share::Types::Transform
         # puts ["index", index].inspect
         next_component = []
 
-        logger.debug ["next_component pre", new_left, next_component]
         transform_component_x left_component, component, new_left, next_component
 
-        logger.debug ["next_component aft", new_left, next_component]
         if next_component.length == 1
           component = next_component.first
         elsif next_component.length == 0
@@ -67,18 +58,15 @@ module Share::Types::Transform
     return operation if other.length == 0
     # TODO: Benchmark with and without this line. I _think_ it'll make a big difference...?
 
-    logger.debug [:transform, operation, other, type, operation.length, other.length]
     if operation.length == 1 && other.length == 1
       return transform_component [], operation.first, other.first, type
     end
 
     if type == LEFT
       transformation = transform_x(operation, other)
-      logger.debug [:transform, type, transformation]
       transformation.first
     else
       transformation = transform_x(other, operation)
-      logger.debug [:transform, type, transformation]
       transformation.last
     end
   end

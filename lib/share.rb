@@ -2,18 +2,6 @@ require "thread_safe"
 require "thread"
 
 module Share
-  def self.logger
-    @logger ||= begin 
-      _logger = if defined?(Rails)
-        Rails.logger.dup
-      else
-        require 'logger'
-        Logger.new(STDOUT)
-      end
-      # _logger.level = Logger::INFO
-      _logger
-    end
-  end
 
   require "share/action"
   require "share/session"

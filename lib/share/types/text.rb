@@ -12,12 +12,7 @@ module Share
       class MissingInsertOrDelete < ArgumentError; end
       class DeletedDifferentTextFromSameRegion < StandardError; end
 
-      def logger
-        Share.logger
-      end
-
       def inject(left, position, right)
-        logger.debug ["#{self.class}#inject", left, position, right]
         left[0, position] + right + left[position, left.length]
       end
 
@@ -36,9 +31,7 @@ module Share
       end
 
       def apply(snapshot, operation)
-        logger.debug ["apply operation, #{operation}"]
         check_valid_operation operation
-        logger.debug ["operation components valid"]
         operation.each do |component|
           if component[INSERT]
             snapshot = inject snapshot, component[POSITION], component[INSERT]

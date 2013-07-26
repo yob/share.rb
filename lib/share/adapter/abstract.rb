@@ -9,8 +9,6 @@ module Share
         attr_accessor :snapshot, :version, :comitted_version
         attr_reader :name
 
-        def logger; Share.logger end
-
         def initialize(name)
           @name = name
           @mutex = Mutex.new
@@ -47,17 +45,10 @@ module Share
           @snapshot = _snapshot.snapshot
           @comitted_version = @version
           return _snapshot.snapshot if _snapshot.v == @version
-          logger.debug "Catchup #{@name} #{_snapshot.v} => #{@version}"
           get_ops(@comitted_version).each do |operation|
             begin
               @snapshot = type.apply @snapshot, operation.op
               @version += 1
-            rescue Exception => error
-              logger.error "Database corruption detected when catching up."
-              logger.error error
-              logger.error error.backtrace * "\n"
-              logger.error ["document", self]
-              logger.error ["operation:", operation]
             end
           end
         end

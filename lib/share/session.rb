@@ -15,10 +15,6 @@ module Share
       @name = nil
     end
 
-    def logger
-      Share.logger
-    end
-
     def create(document_id, type, meta)
       type = TYPE_MAP[type] if type.is_a?(String)
       meta = {}
@@ -32,12 +28,10 @@ module Share
     end
 
     def submit_op(document_id, operation)
-      logger.debug "setup submit_op, #{operation}"
       operation[:meta] ||= {}
       operation[:meta][:source] = id
       dup_if_source = operation[:dup_if_source] || []
       if operation["op"]
-        logger.debug "is operation"
         # action = Action.new({
         #   name: document.name, 
         #   type: document.type, 
@@ -48,7 +42,6 @@ module Share
         # authorize! action
         @repo.apply_operation(document_id, operation[:v], operation[:op], operation[:meta], dup_if_source)
       else
-        logger.debug "is meta operation"
         action = Action.new(
           {name: name, meta: operation[:meta]}, 'submit meta'
         )
