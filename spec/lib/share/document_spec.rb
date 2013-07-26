@@ -21,4 +21,21 @@ describe Share::Document do
     end
 
   end
+
+  describe "#apply_op" do
+
+    context "with a new document" do
+      let!(:doc) { Share::Document.new("foo") }
+
+      before do
+        doc.apply_op(0, {'i' =>'foo', 'p' => 0})
+        doc.apply_op(1, {'i' =>' bar', 'p' => 3})
+      end
+
+      it "should increment the version" do
+        doc.version.should == 2
+      end
+    end
+
+  end
 end

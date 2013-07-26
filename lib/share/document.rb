@@ -4,10 +4,15 @@ module Share
 
     def initialize(id)
       @id = id
+      @ops = []
     end
 
     def version
-      0
+      @ops.size
+    end
+
+    def apply_op(to_version, op)
+      @ops << op
     end
   end
 end
