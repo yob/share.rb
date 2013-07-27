@@ -34,11 +34,7 @@ module Share
     #
     def snapshot(at_version = nil)
       at_version ||= self.version
-      value = ""
-      get_ops(0, at_version).each do |op|
-        value = apply(value, op)
-      end
-      value
+      @type.apply("", get_ops(0, at_version))
     end
 
     private
@@ -51,10 +47,6 @@ module Share
       else
         raise ArgumentError, "to_version must be higher than from_version"
       end
-    end
-
-    def apply(str, op)
-      @type.apply(str,[op])
     end
 
   end
