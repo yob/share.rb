@@ -12,6 +12,9 @@ module Share
       class MissingInsertOrDelete < ArgumentError; end
       class DeletedDifferentTextFromSameRegion < StandardError; end
 
+      # Applies <operation> to <snapshot>. Stores no state, just returns
+      # the transformed snapshot.
+      #
       def apply(snapshot, operation)
         check_valid_operation operation
         operation.each do |component|
@@ -67,6 +70,10 @@ module Share
         position
       end
 
+      # Accepts two conflicitng operations, <operation> and <other>. <other> has already
+      # been applied to the document and <operation> is the conflicting change. Transforms
+      # <operation> so it can be applied to the document *after* <other>.
+      #
       def transform(operation, other, type)
         unless [LEFT, RIGHT].include?(type)
           raise ArgumentError.new("type must be 'left' or 'right'")
