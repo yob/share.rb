@@ -11,10 +11,6 @@ describe Share::Document do
       doc.id.should == "foo"
     end
 
-    it "should return an empty value" do
-      doc.value.should == ""
-    end
-
   end
 
   describe "#version" do

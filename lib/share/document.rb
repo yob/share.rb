@@ -1,14 +1,12 @@
 module Share
   class UnexpectedVersionError < ArgumentError; end
-  class FailedOperationError < RuntimeError; end
 
   class Document
-    attr_reader :id, :value
+    attr_reader :id
 
     def initialize(id)
       @id = id
       @ops = []
-      @value = ""
       @type = Share::Types::Text.new
     end
 
@@ -27,14 +25,17 @@ module Share
       transforming_ops.each do |t_op|
         op = @type.transform([op], [t_op], 'left').first
       end
-      new_val = apply(@value, op)
 
-      if new_val
-        @ops << op
-        @value = new_val
-      else
-        raise FailedOperationError, "could not apply operation"
+      @ops << op
+    end
+
+    # return the current value of the document after all operations
+    def snapshot
+      value = ""
+      @ops.each do |op|
+        value = apply(value, op)
       end
+      value
     end
 
     private

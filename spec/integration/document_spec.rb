@@ -16,7 +16,7 @@ describe Share::Document do
       end
 
       it "should update the value" do
-        doc.value.should == "foo bar"
+        doc.snapshot.should == "foo bar"
       end
     end
 
@@ -31,7 +31,7 @@ describe Share::Document do
       end
 
       it "should update the value" do
-        doc.value.should == "fo"
+        doc.snapshot.should == "fo"
       end
     end
 
@@ -47,7 +47,7 @@ describe Share::Document do
       end
 
       it "should update the value" do
-        doc.value.should == "chunky bacon!"
+        doc.snapshot.should == "chunky bacon!"
       end
     end
 
@@ -63,7 +63,7 @@ describe Share::Document do
       end
 
       it "should update the value" do
-        doc.value.should == "chunky ba"
+        doc.snapshot.should == "chunky ba"
       end
     end
 
@@ -79,7 +79,7 @@ describe Share::Document do
       end
 
       it "should update the value" do
-        doc.value.should == "cooked chunky bacon"
+        doc.snapshot.should == "cooked chunky bacon"
       end
     end
 
