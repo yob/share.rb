@@ -31,45 +31,6 @@ module Share
         snapshot
       end
 
-      def compose(left, right)
-        check_valid_operation left
-        check_valid_operation right
-
-        new_operation = left.dup
-        right.each { |component| _append new_operation, component }
-
-        return new_operation
-      end
-
-      def compress(operation)
-        compose [], operation
-      end
-
-      def normalize(operation)
-        new_operation = []
-        # Normalize should allow ops which are a single (unwrapped) component:
-        # {i:'asdf', p:23}.
-        # There's no good way to test if something is an array:
-        # http://perfectionkills.com/instanceof-considered-harmful-or-how-to-write-a-robust-isarray/
-        # so this is probably the least bad solution.
-        operation = [operation] unless operation.is_a?(Array)
-
-        operation.each do |component|
-          component[POSITION] ||= 0
-          _append new_operation, component
-        end
-
-        new_operation
-      end
-
-      def transform_cursor(position, operation, side=nil)
-        insert_after = side == RIGHT
-        operation.each do |component|
-          position = transform_position position, component, insert_after
-        end
-        position
-      end
-
       # Accepts two conflicitng operations, <operation> and <other>. <other> has already
       # been applied to the document and <operation> is the conflicting change. Transforms
       # <operation> so it can be applied to the document *after* <other>.
