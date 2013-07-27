@@ -37,31 +37,31 @@ module Share
         snapshot
       end
 
-      # Accepts two conflicting operations, <operation> and <other>. <other> has already
-      # been applied to the document and <operation> is the conflicting change. Transforms
-      # <operation> so it can be applied to the document *after* <other>.
+      # Assume two sets of operations made by different users to the same
+      # version of the document. Transforms one of the sets so they apply to
+      # the document after the first set.
       #
-      # operation and other should be arrays of hashes that looks something like:
+      # left_operations and right_operations should be arrays of hashes that
+      # looks something like:
       #
       #     [{'i' => 'foo', 'p' => 0}, {'i' => ' bar', 'p' => 3}]
       #
-      def transform(operation, other, type)
+      def transform(left_operations, right_operations, type)
         unless [LEFT, RIGHT].include?(type)
           raise ArgumentError.new("type must be 'left' or 'right'")
         end
 
-        return operation if other.length == 0
-        # TODO: Benchmark with and without this line. I _think_ it'll make a big difference...?
+        return left_operations if right_operations.length == 0
 
-        if operation.length == 1 && other.length == 1
-          return transform_component [], operation.first, other.first, type
+        if left_operations.length == 1 && right_operations.length == 1
+          return transform_component [], left_operations.first, right_operations.first, type
         end
 
         if type == LEFT
-          transformation = transform_x(operation, other)
+          transformation = transform_x(left_operations, right_operations)
           transformation.first
         else
-          transformation = transform_x(other, operation)
+          transformation = transform_x(right_operations, left_operations)
           transformation.last
         end
       end
