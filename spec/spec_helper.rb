@@ -1,5 +1,4 @@
 require "share"
-system("clear")
 require "rspec"
 require "shoulda-matchers"
 
