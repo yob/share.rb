@@ -1,5 +1,4 @@
-$LOAD_PATH.push File.join(__FILE__, "../..")
-require "lib/share"
+require "share"
 system("clear")
 require "rspec"
 require "shoulda-matchers"
