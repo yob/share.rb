@@ -7,7 +7,3 @@ RSpec.configure do |config|
   # config.filter_run focus:true
 end
 
-poem = open("spec/data/jabberwocky.txt").read.split(/\s+/)
-def random_word
-  poem.shuffle.first
-end
