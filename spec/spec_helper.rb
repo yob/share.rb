@@ -3,7 +3,6 @@ require "lib/share"
 system("clear")
 require "rspec"
 require "shoulda-matchers"
-# require "ruby-debug"
 
 RSpec.configure do |config|
   config.color_enabled = true
