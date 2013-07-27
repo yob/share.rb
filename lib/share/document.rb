@@ -29,10 +29,13 @@ module Share
       @ops << op
     end
 
-    # return the current value of the document after all operations
-    def snapshot
+    # return the value of the document at a given version. If no specific
+    # version is requested the latest version will be returned.
+    #
+    def snapshot(at_version = nil)
+      at_version ||= self.version
       value = ""
-      @ops.each do |op|
+      get_ops(0, at_version).each do |op|
         value = apply(value, op)
       end
       value
@@ -41,10 +44,13 @@ module Share
     private
 
     def get_ops(from_version, to_version)
-      unless to_version.to_i > from_version.to_i
+      if from_version.to_i == to_version.to_i
+        []
+      elsif to_version.to_i > from_version.to_i
+        @ops[from_version.to_i, to_version.to_i - from_version.to_i]
+      else
         raise ArgumentError, "to_version must be higher than from_version"
       end
-      @ops[from_version.to_i, to_version.to_i - from_version.to_i]
     end
 
     def apply(str, op)

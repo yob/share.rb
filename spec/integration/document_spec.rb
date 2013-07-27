@@ -46,8 +46,20 @@ describe Share::Document do
         doc.version.should == 3
       end
 
-      it "should update the value" do
+      it "should return the latest snapshot" do
         doc.snapshot.should == "chunky bacon!"
+      end
+
+      it "should return the snapshot for version 2" do
+        doc.snapshot(2).should == "chunky bacon"
+      end
+
+      it "should return the snapshot for version 1" do
+        doc.snapshot(1).should == "bacon"
+      end
+
+      it "should return the snapshot for version 0" do
+        doc.snapshot(0).should == ""
       end
     end
 
