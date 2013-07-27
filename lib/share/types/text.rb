@@ -15,6 +15,12 @@ module Share
       # Applies <operation> to <snapshot>. Stores no state, just returns
       # the transformed snapshot.
       #
+      # snapshot should be a plain old ruby String
+      #
+      # operation should be an array of hashes that looks something like:
+      #
+      #     [{'i' => 'foo', 'p' => 0}, {'i' => ' bar', 'p' => 3}]
+      #
       def apply(snapshot, operation)
         check_valid_operation operation
         operation.each do |component|
@@ -31,9 +37,13 @@ module Share
         snapshot
       end
 
-      # Accepts two conflicitng operations, <operation> and <other>. <other> has already
+      # Accepts two conflicting operations, <operation> and <other>. <other> has already
       # been applied to the document and <operation> is the conflicting change. Transforms
       # <operation> so it can be applied to the document *after* <other>.
+      #
+      # operation and other should be arrays of hashes that looks something like:
+      #
+      #     [{'i' => 'foo', 'p' => 0}, {'i' => ' bar', 'p' => 3}]
       #
       def transform(operation, other, type)
         unless [LEFT, RIGHT].include?(type)
