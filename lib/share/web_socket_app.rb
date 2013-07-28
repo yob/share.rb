@@ -34,23 +34,32 @@ module Share
     # Rack::WebSocket callback
     def on_message(env, raw_message)
       message = Message.new(raw_message)
-      log "C: #{message.inspect}"
+      log "#{@session.id[0,5]} C: #{message.inspect}"
       response = @session.handle_message(message)
       send_data response if response
     rescue Exception => e
       log "on_message_exception: #{e.inspect}"
+      log e.backtrace.first
     end
 
-    # Call by documents to notify other users of new operations
+    # Called by documents to notify other users of new operations. Response
+    # should be a hash that follows the sharejs protocol. Something like:
     #
-    def on_operation(operation)
-      send_data @protocol.message_for_operation(operation)
+    #   response = {
+    #      doc: "docid",
+    #      v: 1,
+    #      op: [{"i" => "foo", "p" => 0}],
+    #    }
+    #
+    def on_operation(response)
+      puts "#{@session.id[0,5]} WebSocketApp#on_operation #{response.inspect}"
+      send_data response
     end
 
     private
 
     def send_data(message)
-      log "S: #{message.inspect}"
+      log "#{@session.id[0,5]} S: #{message.inspect}"
       super JSON.dump(message)
     end
 

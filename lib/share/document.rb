@@ -38,7 +38,7 @@ module Share
       end
 
       @ops << op
-      notify_observers(op)
+      notify_observers(self.version - 1, op)
     end
 
     # return the value of the document at a given version. If no specific
@@ -65,9 +65,9 @@ module Share
 
     private
 
-    def notify_observers(operation)
+    def notify_observers(version, operation)
       @observers.each do |observer|
-        observer.on_operation(operation)
+        observer.on_operation(@id, version, operation)
       end
     end
 

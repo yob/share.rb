@@ -13,7 +13,7 @@ module Share
       @repo = repo
 
       @current_document = nil
-      @listeners = [@app].compact
+      @observers = [app].compact
       @name = nil
     end
 
@@ -76,11 +76,17 @@ module Share
 
     # Call by documents to notify other users of new operations
     #
-    def on_operation(operation)
+    def on_operation(doc_id, version, operation)
       # TODO skip notifying if the operation was made by this session
       # return if operation[:meta] && operation[:meta]["source"] == @session.id
-      @listeners.each do |observer|
-        observer.on_operation(observer)
+      @current_document = doc_id if @current_document != doc_id
+      @observers.each do |observer|
+        response = {
+          doc: @current_document,
+          v: version,
+          op: operation,
+        }
+        observer.on_operation(response)
       end
     end
 
