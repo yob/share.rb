@@ -11,6 +11,7 @@ Gem::Specification.new do |s|
   s.summary     = "port of sharejs server to Ruby ( rack/thin )"
   s.description = "OT server for rack/rails applications. Includes JSON OT algorithms ported from ShareJS"
 
+  s.required_ruby_version = "1.9.2"
   s.required_rubygems_version = ">= 1.3.6"
   s.files        = Dir.glob("{bin,lib}/**/*") #+ %w(LICENSE README.md ROADMAP.md CHANGELOG.md)
   s.require_path = 'lib'
