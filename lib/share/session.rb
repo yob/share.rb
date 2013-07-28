@@ -76,7 +76,6 @@ module Share
       meta[:ctime] = meta[:mtime] = Time.now()
       meta[:v] = 0
       action = Action.new({name: document_id, type: type, meta: meta}, 'create')
-      authorize! action
       meta[:snapshot] = type::DEFAULT_VALUE.dup
       @repo.create(document_id, meta, type)
     end
@@ -93,24 +92,17 @@ module Share
         #   v: operation["v"]},
         #   'submit op'
         # )
-        # authorize! action
         @repo.apply_operation(document_id, operation[:v], operation[:op], operation[:meta], dup_if_source)
       else
         action = Action.new(
           {name: name, meta: operation[:meta]}, 'submit meta'
         )
-        authorize! action
         @repo.apply_meta_operation!(name, operation)
       end
     end
 
-    def authorize!(action)
-      
-    end
-
     def delete(adapter, name)
       action = Action.new({name: name}, 'delete')
-      authorize! action
       adapter.delete!(name)
     end
   end
