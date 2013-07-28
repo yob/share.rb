@@ -12,6 +12,7 @@ module Share
       # @remote_address = data[:remote_address]
       @repo = repo
 
+      @current_document = nil
       @listeners = {}
       @name = nil
     end
@@ -19,21 +20,20 @@ module Share
     def handle_message(message)
       return if message.auth?
 
-      # This got yucky fast.
-      message.document and @current_document = message.document
+      @current_document = message.document if message.document
 
       response = {doc: @current_document}
 
       document = @repo.get(@current_document)
 
-      if document.nil?
-        response[:error] = "Document does not exist"
-      elsif message.create? && document.exists?
+      if message.create? && document
         response[:create] = false
       elsif message.create?
-        document = @session.create(@current_document, message.type, {})
+        document = @repo.create(@current_document, message.type)
         response[:create] = true
         response[:meta] = document.meta
+      elsif document.nil?
+        response[:error] = "Document does not exist"
       end
 
       if message.operation?
@@ -52,7 +52,7 @@ module Share
 
 
       if message.open?
-        @app.subscribe_to(@current_document, message.version)
+        #@app.subscribe_to(@current_document, message.version)
         response[:open] = true
         response[:v] = document.version
       end

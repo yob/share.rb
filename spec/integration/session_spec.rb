@@ -8,6 +8,10 @@ describe Share::Session do
     Share::Message.new ::JSON.dump(message_data)
   end
 
+  before do
+    repo.create("existingdoc", "text")
+  end
+
   describe "respond_to(message)" do
     let(:response) { session.handle_message message }
 
@@ -17,24 +21,23 @@ describe Share::Session do
       end
 
       it "closes" do
-        response[:open].should == false
+        response[:open].should be_false
       end
     end
 
     describe "creating a document that already exists" do
-      let(:adapter) { ExistingAdapter }
       let(:message_data) do
-        { doc: "test", create: true, type: "json" }
+        { doc: "existingdoc", create: true, type: "text" }
       end
 
       it "responds with create: false" do
-        response[:create].should == false
+        response[:create].should be_false
       end
     end
 
     describe "creating a new document" do
       let(:message_data) do
-        { doc: "test", create: true, type: "json" }
+        { doc: "test", create: true, type: "text" }
       end
 
       it "responds with create: true" do
@@ -42,13 +45,13 @@ describe Share::Session do
       end
 
       it "responds with document metadata" do
-        response[:meta].should == :metadata
+        response[:meta].should == {}
       end
     end
 
     describe "document that doesn't exist" do
       let(:message_data) do
-        { doc: "test", type: "json" }
+        { doc: "test", type: "text" }
       end
 
       it "responds with an error" do
@@ -59,10 +62,12 @@ describe Share::Session do
 
     describe "document type doesn't match type in repo" do
       let(:message_data) do
-        { doc: "test", type: "text"}
+        { doc: "existingdoc", type: "json"}
       end
 
       it "responds with an error" do
+        # TODO re-enable this once JSON type is implemented
+        pending
         response.has_key?(:error).should == true
         response[:error].should match "Type mismatch"
       end
@@ -79,20 +84,18 @@ describe Share::Session do
     end
 
     describe "snapshot request" do
-      let(:adapter) { ExistingAdapter }
       let(:message_data) do
-        { doc: "test", type: "json", snapshot: nil}
+        { doc: "existingdoc", type: "text", snapshot: nil}
       end
 
       it "responds with the snapshot" do
-        response[:snapshot].should == :snapshot
+        response[:snapshot].should == ""
       end
     end
 
     describe "open request" do
-      let(:adapter) { ExistingAdapter }
       let(:message_data) do
-        { doc: "test", open: true}
+        { doc: "existingdoc", open: true}
       end
 
       it "responds in the affirmative" do
@@ -100,7 +103,7 @@ describe Share::Session do
       end
 
       it "responds with the opened version" do
-        response[:v].should == :version
+        response[:v].should == 0
       end
 
       it "subscribes to the document" do
