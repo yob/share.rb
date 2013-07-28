@@ -68,6 +68,12 @@ module Share
       response
     end
 
+    # first response sent to the client after they connect
+    #
+    def handshake_response
+      {auth: @id}
+    end
+
     private
 
     def create(document_id, type)
