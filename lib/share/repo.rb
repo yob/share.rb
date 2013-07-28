@@ -5,25 +5,24 @@ module Share
 
     OPS_BEFORE_COMMIT = 20
 
-    attr_reader :adapter
-
-    class MissingAdapterError < ArgumentError; end
+    class DocExistsError < ArgumentError; end
+    class UnsupportedTypeError < ArgumentError; end
 
     def initialize
-      @adapter = Share::Adapter::ActiveRecord::Document
       @documents = ThreadSafe::Hash.new
     end
 
     def get(document_id)
-      document = @documents[document_id] ||= begin
-        @adapter.new(document_id)
-      end
-      document.cancel_reap_timer
-      document
+      document = @documents[document_id] # || load from DB
+      #document.cancel_reap_timer
     end
 
-    def create(id, data, type)
-      get(id).create(data, type)
+    def create(id, type)
+      if get(id).nil?
+        @documents[id] = Share::Document.new(id, type_string_to_instance(type))
+      else
+        raise DocExistsError, "doc #{id} already exists"
+      end
     end
 
     def get_snapshot(id)
@@ -103,5 +102,16 @@ module Share
     def reap(id)
       documents.delete id
     end
+
+    private
+
+    def type_string_to_instance(str)
+      case str
+      when "text" then Share::Types::Text.new
+      else
+        raise UnsupportedTypeError, "Unsupported type '#{str}'"
+      end
+    end
+
   end
 end
