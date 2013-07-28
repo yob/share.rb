@@ -1,3 +1,5 @@
+require 'share/operation'
+
 module Share
   class UnexpectedVersionError < ArgumentError; end
   class UnsupportedTypeError < ArgumentError; end
@@ -24,21 +26,22 @@ module Share
     end
 
     # TODO needs dup_if_source and metadata support
-    def apply_op(to_version, op)
+    def apply_op(to_version, op, meta = {})
       raise UnexpectedVersionError if to_version > self.version
       op = [op] unless op.is_a?(Array)
+      operation = Share::Operation.new(op, meta)
 
-      transforming_ops = if to_version == self.version
-                           []
-                         else
-                           get_ops(to_version, self.version)
-                         end
-      transforming_ops.each do |t_op|
-        op = @transformer.transform(op, t_op, 'left').first
+      transforming_operations = if to_version == self.version
+                                  []
+                                else
+                                  get_ops(to_version, self.version)
+                                end
+      transforming_operations.each do |t_operation|
+        operation.op = @transformer.transform(operation.op, t_operation.op, 'left').first
       end
 
-      @ops << op
-      notify_observers(self.version - 1, op)
+      @ops << operation
+      notify_observers(self.version - 1, operation)
     end
 
     # return the value of the document at a given version. If no specific
@@ -46,7 +49,8 @@ module Share
     #
     def snapshot(at_version = nil)
       at_version ||= self.version
-      @transformer.apply("", get_ops(0, at_version).flatten)
+      ops = get_ops(0, at_version).map(&:op).flatten
+      @transformer.apply("", ops)
     end
 
     # These are methods that were originally on Repo and will probably need to
