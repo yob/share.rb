@@ -5,34 +5,25 @@ module Share
   # a tiny sinatra app used for the demo
   #
   class ExampleApp < Sinatra::Base
+    set :public_folder, File.dirname(__FILE__) + '/static'
+
     get "/" do
       [200, { 'Content-Type' => 'text/html' }, <<EOF
 <html><head>
+<script src="/js/share.uncompressed.js" type="text/javascript"></script>
+<script src="/js/textarea.js" type="text/javascript"></script>
 <script>
   function init() {
-    function log(msg) { document.getElementById('log').innerHTML += msg + '<br>'; }
     var socketUri = 'ws://' + document.location.host + '/socket';
-    log('Socket URI: ' + socketUri);
-    var socket = new WebSocket(socketUri);
-    socket.onopen = function(e) {
-      log('onopen');
-      socket.send('Is there anybody out there?');
-      log('sent message');
-    };
-    socket.onclose = function(e) {
-      log('onclose; code = ' + e.code + ', reason = ' + e.reason);
-    };
-    socket.onerror = function(e) {
-      log('onerror');
-    };
-    socket.onmessage = function(e) {
-      log('onmessage; data = ' + e.data);
-    };
+    sharejs.open(socketUri, 'text', function(error, doc) {
+      var elem = document.getElementById('pad');
+      doc.attach_textarea(elem);
+    });
   }
 </script>
 </head><body onload='init();'>
-  <h1>Serving WebSocket and normal Rack app on the same port</h1>
-  <p id='log'></p>
+  <h1>share.rb demo</h1>
+  <textarea id='pad'></textarea>
 </body></html>
 EOF
       ]
