@@ -16,6 +16,7 @@ Gem::Specification.new do |s|
   s.files        = Dir.glob("{bin,lib}/**/*") #+ %w(LICENSE README.md ROADMAP.md CHANGELOG.md)
   s.require_path = 'lib'
 
+  s.add_dependency "sinatra"
   s.add_dependency "thin", "~> 1.4.1"
   s.add_dependency "websocket-rack", "~> 0.4.0"
   s.add_dependency "thread_safe", "~> 0.0.3"
