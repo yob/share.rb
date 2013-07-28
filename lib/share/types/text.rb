@@ -1,5 +1,7 @@
 module Share
   module Types
+    # The operational transform logic for plain text documents.
+    #
     class Text
 
       INSERT = 'i'

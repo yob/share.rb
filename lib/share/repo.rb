@@ -1,6 +1,7 @@
 require "thread_safe"
 
 module Share
+  # A collection of documents.
   class Repo
 
     class DocExistsError < ArgumentError; end

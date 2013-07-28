@@ -1,6 +1,8 @@
 module Share
   class UnexpectedVersionError < ArgumentError; end
 
+  # a single document that can be collaboratively edited
+  #
   class Document
     attr_reader :id
 
