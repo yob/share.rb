@@ -1,18 +1,16 @@
 require 'spec_helper'
+require 'json'
 
 describe Share::Session do
-  let(:repo) { Share::Repo.new }
-  let(:session) { Share::Session.new(repo) }
-  let(:message) do
-    require 'json'
-    Share::Message.new ::JSON.dump(message_data)
-  end
+  let!(:repo) { Share::Repo.new }
+  let!(:session) { Share::Session.new(repo) }
+  let(:message) { Share::Message.new ::JSON.dump(message_data) }
 
   before do
     repo.create("existingdoc", "text")
   end
 
-  describe "respond_to(message)" do
+  describe "#respond_to" do
     let(:response) { session.handle_message message }
 
     describe "close message" do
@@ -111,5 +109,36 @@ describe Share::Session do
         #app.subscriptions["test"].include?(session.id).should == true
       end
     end
+  end
+
+  describe "create, edit, close workflow" do
+    before do
+      # create
+      msg = Share::Message.new(JSON.dump(doc: "test", create: true, type: "text"))
+      session.handle_message(msg)
+
+      # edit
+      msg = Share::Message.new(JSON.dump(doc: "test", v: 0, op: {"i" => "foo", "p" => 0}))
+      session.handle_message(msg)
+
+      # edit again
+      msg = Share::Message.new(JSON.dump(doc: "test", v: 1, op: {"i" => " bar", "p" => 3}))
+      session.handle_message(msg)
+
+      # close
+      msg = Share::Message.new(JSON.dump(doc: "test", open: false))
+      session.handle_message(msg)
+    end
+
+    it "should leave a valid doc in the repo" do
+      doc = repo.get("test")
+      doc.should be_a(Share::Document)
+    end
+
+    it "should leave the document in the correct state" do
+      doc = repo.get("test")
+      doc.snapshot.should == "foo bar"
+    end
+
   end
 end
