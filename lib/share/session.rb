@@ -61,7 +61,7 @@ module Share
       end
 
       if message.close?
-        document.delete_observer(self)
+        document.delete_observer(self) if document
         response = {doc: @current_document, open: false}
       end
 
