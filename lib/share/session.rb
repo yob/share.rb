@@ -4,11 +4,12 @@ module Share
   class Session
     attr_reader :id
 
-    def initialize(data, repo)
+    def initialize(repo)
       @id = SecureRandom.hex
-      @connect_time = Time.now()
-      @headers = data[:headers]
-      @remote_address = data[:remote_address]
+      @connect_time = Time.now
+      # TODO record the current users details
+      # @headers = data[:headers]
+      # @remote_address = data[:remote_address]
       @repo = repo
 
       @listeners = {}
