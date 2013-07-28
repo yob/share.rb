@@ -44,12 +44,28 @@ describe Share::Types::Text do
   end
 
   describe "#transform" do
-    it "is sane" do
-      text.transform([], [], 'left').should == []
-      text.transform([], [], 'right').should == []
+    context "left tranform with no ops" do
+      it "should return an empty array" do
+        text.transform([], [], 'left').should == []
+      end
+    end
 
-      text.transform([{'i' =>'y', 'p' =>100}, {'i' =>'x', 'p' =>0}], [], 'left').should == [{'i' =>'y', 'p' =>100}, {'i' =>'x', 'p' =>0}]
-      text.transform([], [{'i' =>'y', 'p' =>100}, {'i' =>'x', 'p' =>0}], 'right').should == []
+    context "right tranform with no ops" do
+      it "should return an empty array" do
+        text.transform([], [], 'right').should == []
+      end
+    end
+
+    context "left tranform with no right ops" do
+      it "should return left ops unchanched" do
+        text.transform([{'i' =>'y', 'p' =>100}, {'i' =>'x', 'p' =>0}], [], 'left').should == [{'i' =>'y', 'p' =>100}, {'i' =>'x', 'p' =>0}]
+      end
+    end
+
+    context "right tranform with no left ops" do
+      it "should return an empty array" do
+        text.transform([], [{'i' =>'y', 'p' =>100}, {'i' =>'x', 'p' =>0}], 'right').should == []
+      end
     end
 
     it "inserts" do
