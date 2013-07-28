@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Share::Types::Text do
-    let!(:text) { Share::Types::Text.new }
+  let!(:text) { Share::Types::Text.new }
 
   describe "#apply" do
     context "1 insert" do
