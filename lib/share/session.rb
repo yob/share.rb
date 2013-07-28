@@ -75,7 +75,6 @@ module Share
       meta[:creator] = @name if @name
       meta[:ctime] = meta[:mtime] = Time.now()
       meta[:v] = 0
-      action = Action.new({name: document_id, type: type, meta: meta}, 'create')
       meta[:snapshot] = type::DEFAULT_VALUE.dup
       @repo.create(document_id, meta, type)
     end
@@ -85,24 +84,13 @@ module Share
       operation[:meta][:source] = id
       dup_if_source = operation[:dup_if_source] || []
       if operation["op"]
-        # action = Action.new({
-        #   name: document.name, 
-        #   type: document.type, 
-        #   meta: operation[:meta], 
-        #   v: operation["v"]},
-        #   'submit op'
-        # )
         @repo.apply_operation(document_id, operation[:v], operation[:op], operation[:meta], dup_if_source)
       else
-        action = Action.new(
-          {name: name, meta: operation[:meta]}, 'submit meta'
-        )
         @repo.apply_meta_operation!(name, operation)
       end
     end
 
     def delete(adapter, name)
-      action = Action.new({name: name}, 'delete')
       adapter.delete!(name)
     end
   end
