@@ -1,19 +1,25 @@
 module Share
   class UnexpectedVersionError < ArgumentError; end
+  class UnsupportedTypeError < ArgumentError; end
 
   # a single document that can be collaboratively edited
   #
   class Document
-    attr_reader :id
+    attr_reader :id, :type
 
     def initialize(id, type = nil)
       @id = id
       @ops = []
-      @type = type || Share::Types::Text.new
+      @type = type || "text"
+      @transformer = type_string_to_instance(@type)
     end
 
     def version
       @ops.size
+    end
+
+    def meta
+      {}
     end
 
     # TODO needs dup_if_source and metadata support
@@ -26,7 +32,7 @@ module Share
                            get_ops(to_version, self.version)
                          end
       transforming_ops.each do |t_op|
-        op = @type.transform([op], [t_op], 'left').first
+        op = @transformer.transform([op], [t_op], 'left').first
       end
 
       @ops << op
@@ -37,7 +43,7 @@ module Share
     #
     def snapshot(at_version = nil)
       at_version ||= self.version
-      @type.apply("", get_ops(0, at_version))
+      @transformer.apply("", get_ops(0, at_version))
     end
 
     # These are methods that were originally on Repo and will probably need to
@@ -57,6 +63,15 @@ module Share
         raise ArgumentError, "to_version must be higher than from_version"
       end
     end
+
+    def type_string_to_instance(str)
+      case str
+      when "text" then Share::Types::Text.new
+      else
+        raise UnsupportedTypeError, "Unsupported type '#{str}'"
+      end
+    end
+
 
   end
 end

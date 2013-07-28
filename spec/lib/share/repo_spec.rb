@@ -25,13 +25,6 @@ describe Share::Repo do
           doc.id.should == "foo"
         end
       end
-      context "creating a new document with an invalid type" do
-        it "should be a document" do
-          lambda {
-            repo.create("foo", "text2")
-          }.should raise_error(Share::Repo::UnsupportedTypeError)
-        end
-      end
     end
   end
 end
