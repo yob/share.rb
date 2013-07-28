@@ -29,7 +29,7 @@ module Share
       if message.create? && document
         response[:create] = false
       elsif message.create?
-        document = @repo.create(@current_document, message.type)
+        document = create(@current_document, message.type)
         response[:create] = true
         response[:meta] = document.meta
       elsif document.nil?
@@ -37,7 +37,7 @@ module Share
       end
 
       if message.operation?
-        @session.submit_op(@current_document, message.data)
+        submit_op(@current_document, message)
         return {v: message.data[:v]}
       end
 
@@ -49,7 +49,6 @@ module Share
         response[:open] = false
         return response
       end
-
 
       if message.open?
         #@app.subscribe_to(@current_document, message.version)
@@ -69,24 +68,22 @@ module Share
       response
     end
 
-    def create(document_id, type, meta)
-      type = TYPE_MAP[type] if type.is_a?(String)
+    private
+
+    def create(document_id, type)
       meta = {}
       meta[:creator] = @name if @name
-      meta[:ctime] = meta[:mtime] = Time.now()
-      meta[:v] = 0
-      meta[:snapshot] = type::DEFAULT_VALUE.dup
-      @repo.create(document_id, meta, type)
+      meta[:ctime] = meta[:mtime] = Time.now
+      # TODO: documents should store metadata
+      #@repo.create(document_id, meta, type)
+      @repo.create(document_id, type)
     end
 
-    def submit_op(document_id, operation)
-      operation[:meta] ||= {}
-      operation[:meta][:source] = id
-      dup_if_source = operation[:dup_if_source] || []
-      if operation["op"]
-        @repo.apply_operation(document_id, operation[:v], operation[:op], operation[:meta], dup_if_source)
-      else
-        @repo.apply_meta_operation!(name, operation)
+    def submit_op(document_id, message)
+      # TODO: operations should store metadata
+      if operation
+        doc = @get.get(document_id)
+        doc.apply_op(message.version, message.operation)
       end
     end
 

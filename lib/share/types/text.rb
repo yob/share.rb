@@ -7,7 +7,6 @@ module Share
       INSERT = 'i'
       DELETE = 'd'
       PATH = POSITION = 'p'
-      DEFAULT_VALUE = ""
       LEFT = 'left'
       RIGHT = 'right'
 
