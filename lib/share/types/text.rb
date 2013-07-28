@@ -27,7 +27,7 @@ module Share
           if component[INSERT]
             snapshot = inject snapshot, component[POSITION], component[INSERT]
           else
-            deleted = snapshot[component[POSITION], component[POSITION] + component[DELETE].length]
+            deleted = snapshot[component[POSITION], component[DELETE].length]
             unless component[DELETE] == deleted
               raise DeletedStringDoesNotMatch.new(component, deleted)
             end

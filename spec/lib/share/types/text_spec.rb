@@ -1,9 +1,42 @@
 require 'spec_helper'
 
 describe Share::Types::Text do
-  let!(:text) { Share::Types::Text.new }
+    let!(:text) { Share::Types::Text.new }
 
-  context "transform" do
+  describe "#apply" do
+    context "1 insert" do
+      it "should return the correct snapshot" do
+        text.apply("", [{'i' => 'foo', 'p' => 0}]).should == "foo"
+      end
+    end
+    context "2 non-conflicting inserts" do
+      it "should return the correct snapshot" do
+        text.apply("", [{'i' => 'foo', 'p' => 0}, {'i' => ' bar', 'p' => 3}]).should == "foo bar"
+      end
+    end
+    context "1 delete" do
+      it "should return the correct snapshot" do
+        text.apply("foo bar", [{'d' => ' bar', 'p' => 3}]).should == "foo"
+      end
+    end
+    context "2 non-conflicting deletes" do
+      it "should return the correct snapshot" do
+        text.apply("foo bar", [{'d' => 'r', 'p' => 6}, {'d' => 'o', 'p' => 2}]).should == "fo ba"
+      end
+    end
+    context "non-conflicting insert and delete" do
+      it "should return the correct snapshot" do
+        text.apply("", [{'i' => 'foo bar', 'p' => 0}, {'d' => ' bar', 'p' => 3}]).should == "foo"
+      end
+    end
+    context "non-conflicting delete and insert" do
+      it "should return the correct snapshot" do
+        text.apply("foo bar", [{'d' => ' bar', 'p' => 3},{'i' => ' baz', 'p' => 3}]).should == "foo baz"
+      end
+    end
+  end
+
+  describe "#transform" do
     it "is sane" do
       text.transform([], [], 'left').should == []
       text.transform([], [], 'right').should == []
