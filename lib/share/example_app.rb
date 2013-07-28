@@ -15,7 +15,7 @@ module Share
 <script>
   function init() {
     var socketUri = 'ws://' + document.location.host + '/socket';
-    sharejs.open(socketUri, 'text', function(error, doc) {
+    sharejs.open('test-document', 'text', socketUri, function(error, doc) {
       var elem = document.getElementById('pad');
       doc.attach_textarea(elem);
     });
