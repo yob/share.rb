@@ -90,8 +90,5 @@ module Share
       end
     end
 
-    def delete(adapter, name)
-      adapter.delete!(name)
-    end
   end
 end
