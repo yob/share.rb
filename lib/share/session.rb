@@ -26,14 +26,14 @@ module Share
 
       document = @repo.get(@current_document)
 
-      if message.create? && document.exists?
+      if document.nil?
+        response[:error] = "Document does not exist"
+      elsif message.create? && document.exists?
         response[:create] = false
       elsif message.create?
         document = @session.create(@current_document, message.type, {})
         response[:create] = true
         response[:meta] = document.meta
-      elsif !document.exists?
-        response[:error] = "Document does not exist"
       end
 
       if message.operation?
@@ -41,7 +41,7 @@ module Share
         return {v: message.data[:v]}
       end
 
-      if document.type && message.type && document.type != message.type
+      if document && document.type && message.type && document.type != message.type
         response[:error] = "Type mismatch"
       end
 
@@ -57,12 +57,12 @@ module Share
         response[:v] = document.version
       end
 
-      if message.snapshot?
+      if document && message.snapshot?
         response[:snapshot] = document.snapshot
       end
 
       if message.close?
-        @app.unsubscribe_from(@current_document)
+        #@app.unsubscribe_from(@current_document)
         response = {doc: @current_document, open: false}
       end
 
