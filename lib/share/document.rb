@@ -14,6 +14,7 @@ module Share
       @ops.size
     end
 
+    # TODO needs dup_if_source and metadata support
     def apply_op(to_version, op)
       raise UnexpectedVersionError if to_version > self.version
 
@@ -36,6 +37,12 @@ module Share
       at_version ||= self.version
       @type.apply("", get_ops(0, at_version))
     end
+
+    # These are methods that were originally on Repo and will probably need to
+    # be added here:
+    #
+    # * subscribe
+    # * unsubscribe
 
     private
 
