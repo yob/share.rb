@@ -11,6 +11,7 @@ module Share
 
       class MissingInsertOrDelete < ArgumentError; end
       class DeletedDifferentTextFromSameRegion < StandardError; end
+      class DeletedStringDoesNotMatch < StandardError; end
 
       # Applies <operation> to <snapshot>. Stores no state, just returns
       # the transformed snapshot.
@@ -29,7 +30,7 @@ module Share
           else
             deleted = snapshot[component[POSITION], component[DELETE].length]
             unless component[DELETE] == deleted
-              raise DeletedStringDoesNotMatch.new(component, deleted)
+              raise DeletedStringDoesNotMatch, "request: #{component} actual: #{deleted}"
             end
             snapshot = snapshot[0, component[POSITION]] + snapshot[component[POSITION] + component[DELETE].length, snapshot.length]
           end

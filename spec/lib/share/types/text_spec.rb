@@ -34,6 +34,13 @@ describe Share::Types::Text do
         text.apply("foo bar", [{'d' => ' bar', 'p' => 3},{'i' => ' baz', 'p' => 3}]).should == "foo baz"
       end
     end
+    context "invalid delete" do
+      it "should raise an exception" do
+        lambda {
+          text.apply("foo bar", [{'d' => ' baz', 'p' => 3}])
+        }.should raise_error(Share::Types::Text::DeletedStringDoesNotMatch)
+      end
+    end
   end
 
   describe "#transform" do
