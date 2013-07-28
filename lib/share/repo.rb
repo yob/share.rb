@@ -9,12 +9,8 @@ module Share
 
     class MissingAdapterError < ArgumentError; end
 
-    def initialize(options = {})
-      unless options[:adapter] && options[:adapter] < Share::Adapter::Abstract::Document
-        raise MissingAdapterError.new
-      end
-
-      @adapter = options[:adapter]
+    def initialize
+      @adapter = Share::Adapter::ActiveRecord::Document
       @documents = ThreadSafe::Hash.new
     end
 

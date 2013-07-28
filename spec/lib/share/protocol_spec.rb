@@ -86,8 +86,7 @@ describe Share::Protocol do
   let(:app) do
     TestWebSocketApp.new(repo, session)
   end
-  let(:adapter) { TestAdapter }
-  let(:repo) { Share::Repo.new(adapter: adapter) }
+  let(:repo) { Share::Repo.new }
   let(:session) { Share::Session.new({}, repo) }
   let(:protocol) { Share::Protocol.new(app, repo, session) }
   let(:message) do
