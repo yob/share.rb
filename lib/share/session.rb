@@ -45,7 +45,7 @@ module Share
         response[:error] = "Type mismatch"
       end
 
-      if message.open? and response[:error]
+      if message.open? && response[:error]
         response[:open] = false
         return response
       end
