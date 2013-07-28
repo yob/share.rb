@@ -25,6 +25,7 @@ module Share
     # TODO needs dup_if_source and metadata support
     def apply_op(to_version, op)
       raise UnexpectedVersionError if to_version > self.version
+      op = [op] unless op.is_a?(Array)
 
       transforming_ops = if to_version == self.version
                            []
@@ -32,7 +33,7 @@ module Share
                            get_ops(to_version, self.version)
                          end
       transforming_ops.each do |t_op|
-        op = @transformer.transform([op], [t_op], 'left').first
+        op = @transformer.transform(op, t_op, 'left').first
       end
 
       @ops << op
@@ -43,7 +44,7 @@ module Share
     #
     def snapshot(at_version = nil)
       at_version ||= self.version
-      @transformer.apply("", get_ops(0, at_version))
+      @transformer.apply("", get_ops(0, at_version).flatten)
     end
 
     # These are methods that were originally on Repo and will probably need to
