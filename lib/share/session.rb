@@ -104,7 +104,8 @@ module Share
     def submit_op(document_id, message)
       # TODO: operations should store metadata
       doc = @repo.get(document_id)
-      doc.apply_op(message.version, message.operation)
+      meta = {source: @id}
+      doc.apply_op(message.version, message.operation, meta)
     end
 
   end
