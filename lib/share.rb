@@ -9,8 +9,7 @@ module Share
   require "share/protocol"
   require "share/document"
 
-  require "share/repo/abstract"
-  require "share/repo/in_process"
+  require "share/repo"
   require "share/adapter/abstract"
 
   require "share/types/text"
