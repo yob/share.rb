@@ -3,6 +3,8 @@ require 'active_support/hash_with_indifferent_access'
 
 
 module Share
+  class ProtocolError < StandardError; end
+
   class Message
     HWIA = ActiveSupport::HashWithIndifferentAccess
 
