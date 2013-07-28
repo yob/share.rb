@@ -6,6 +6,6 @@ module Share
   require "share/message"
   require "share/document"
   require "share/repo"
-
   require "share/types/text"
+  require "share/web_socket_app"
 end
