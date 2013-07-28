@@ -48,6 +48,9 @@ module Share
       #     [{'i' => 'foo', 'p' => 0}, {'i' => ' bar', 'p' => 3}]
       #
       def transform(left_operations, right_operations, type)
+        # TODO can this be simplified to always be a left transform? The first
+        #      arg can be the ops to be transformed, the second arg could be the
+        #      ops that have been applied and the 3 arg could be removed.
         unless [LEFT, RIGHT].include?(type)
           raise ArgumentError.new("type must be 'left' or 'right'")
         end
