@@ -4,7 +4,7 @@ module Share
   class Session
     attr_reader :id
 
-    def initialize(repo)
+    def initialize(repo, app = nil)
       @id = SecureRandom.hex
       @connect_time = Time.now
       # TODO record the current users details
@@ -13,7 +13,7 @@ module Share
       @repo = repo
 
       @current_document = nil
-      @listeners = {}
+      @listeners = [@app].compact
       @name = nil
     end
 
@@ -51,7 +51,7 @@ module Share
       end
 
       if message.open?
-        #@app.subscribe_to(@current_document, message.version)
+        document.add_observer(self)
         response[:open] = true
         response[:v] = document.version
       end
@@ -61,7 +61,7 @@ module Share
       end
 
       if message.close?
-        #@app.unsubscribe_from(@current_document)
+        document.delete_observer(self)
         response = {doc: @current_document, open: false}
       end
 
@@ -72,6 +72,16 @@ module Share
     #
     def handshake_response
       {auth: @id}
+    end
+
+    # Call by documents to notify other users of new operations
+    #
+    def on_operation(operation)
+      # TODO skip notifying if the operation was made by this session
+      # return if operation[:meta] && operation[:meta]["source"] == @session.id
+      @listeners.each do |observer|
+        observer.on_operation(observer)
+      end
     end
 
     private

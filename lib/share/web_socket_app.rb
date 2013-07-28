@@ -20,7 +20,7 @@ module Share
 
     # Rack::WebSocket callback
     def on_open(env)
-      @session = Share::Session.new(@repo)
+      @session = Share::Session.new(@repo, self)
       send_data @session.handshake_response
     rescue Exception => e
       log "on_open_exception: #{e.inspect}"
@@ -41,10 +41,10 @@ module Share
       log "on_message_exception: #{e.inspect}"
     end
 
-    # update via observable
+    # Call by documents to notify other users of new operations
+    #
     def on_operation(operation)
-      return if operation[:meta] && operation[:meta]["source"] == @session.id
-      send_data @protocol.message_for_operation(operation)        
+      send_data @protocol.message_for_operation(operation)
     end
 
     private
