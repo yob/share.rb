@@ -28,7 +28,7 @@ module Share
             t.text :_type, null: false
             t.text :snapshot, null: false
             t.text :meta, null: false
-            t.timestamps            
+            t.timestamps
           end
 
           add_index 'share:snapshots', [:doc, :v], unique: true

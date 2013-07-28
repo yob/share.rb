@@ -30,13 +30,13 @@ module Share
 
         def add_observer(observer, message=:update)
           synchronize do
-            @observers[observer] = message            
+            @observers[observer] = message
           end
         end
 
         def delete_observer(observer)
           synchronize do
-            @observer.delete(observer)            
+            @observer.delete(observer)
           end
         end
 
@@ -57,7 +57,7 @@ module Share
           # synchronize do
             @observers.each do |observer, message|
               observer.send message, *payload
-            end            
+            end
           # end
         end
 
@@ -80,7 +80,7 @@ module Share
         end
 
         def verison
-          raise "Undefined"          
+          raise "Undefined"
         end
 
         def meta
@@ -106,7 +106,7 @@ module Share
         def write_op(data)
           raise "Undefined"
         end
-        
+
         def reap_timer(&block)
           cancel_reap_timer
           @timer = EventMachine::Timer.new REAP_TIME, &block
