@@ -1,94 +1,8 @@
 require 'spec_helper'
 
-class TestAdapter
-  def self.create!(name, type, meta)
-    new \
-      doc: name,
-      type: type,
-      meta: meta
-  end
-
-  def exists?
-    false
-  end
-
-  def meta
-    :metadata
-  end
-
-  def type
-    Share::Types::Text.new
-  end
-
-  def get_snapshot
-    :snapshot
-  end
-
-  def version
-    :version
-  end
-
-  def create(*)
-    Object.new.tap do |o|
-      class << o
-        def meta; :metadata; end
-        def type; Share::Types['json']; end
-      end
-    end
-  end
-
-  def last_op
-    @last_op  ||= begin
-      Object.new.tap do |o|
-        class << o
-          def v; :version; end
-        end
-      end
-    end
-  end
-
-  def most_recent_snapshot
-    Object.new.tap do |o|
-      class << o
-        def v; :version; end
-        def snapshot; :snapshot; end
-      end
-    end
-  end
-end
-
-class ExistingAdapter < TestAdapter
-  def exists?
-    true
-  end
-
-end
-
-class TestWebSocketApp
-  attr_reader :subscriptions
-  def initialize(repo, session)
-    @repo = repo
-    @session = session
-    @subscriptions = {}
-  end
-
-  def subscribe_to(document, at_version)
-    @subscriptions[document] ||= []
-    @subscriptions[document] << @session.id
-  end
-
-  def unsubscribe_from(document)
-    @subscriptions[document] and @subscriptions[document] -= [@session.id]
-  end
-end
-
-describe Share::Protocol do
-  let(:app) do
-    TestWebSocketApp.new(repo, session)
-  end
+describe Share::Session do
   let(:repo) { Share::Repo.new }
-  let(:session) { Share::Session.new({}, repo) }
-  let(:protocol) { Share::Protocol.new(app, repo, session) }
+  let(:session) { Share::Session.new(repo) }
   let(:message) do
     require 'json'
     Share::Message.new ::JSON.dump(message_data)
@@ -97,7 +11,7 @@ describe Share::Protocol do
   it "creates a handshake response" do
     protocol.handshake.should == {auth: session.id}
   end
-  
+
   describe "respond_to(message)" do
     let(:response) { protocol.respond_to message }
 
