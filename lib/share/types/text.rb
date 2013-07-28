@@ -66,6 +66,32 @@ module Share
         end
       end
 
+      private
+
+      def _append(new_operation, component)
+        return if component[INSERT] == '' || component[DELETE] == ''
+        if new_operation.length == 0
+          new_operation.push component
+        else
+          last = new_operation.last
+          if last[INSERT] && component[INSERT] && last[POSITION] <= component[PATH] && component[PATH] <= (last[POSITION] + last[INSERT].length)
+            new_operation[new_operation.length - 1] = {
+              INSERT => inject(last[INSERT], component[POSITION] - last[POSITION], component[INSERT]),
+              POSITION => last[POSITION]
+            }
+          elsif last[DELETE] && component[DELETE] && component[POSITION] <= last[POSITION] && last[POSITION] <= (component[POSITION] + component[DELETE].length)
+            new_operation[new_operation.length - 1] = {
+              DELETE => inject(component[DELETE], last[POSITION] - component[POSITION], last[DELETE]),
+              POSITION => component[POSITION]
+            }
+          else
+            new_operation.push component
+          end
+        end
+      rescue StandardError => e
+        raise component.inspect
+      end
+
       def transform_x(left, right)
         check_valid_operation(left)
         check_valid_operation(right)
@@ -108,31 +134,6 @@ module Share
         [left, new_right]
       end
 
-      private
-
-      def _append(new_operation, component)
-        return if component[INSERT] == '' || component[DELETE] == ''
-        if new_operation.length == 0
-          new_operation.push component
-        else
-          last = new_operation.last
-          if last[INSERT] && component[INSERT] && last[POSITION] <= component[PATH] && component[PATH] <= (last[POSITION] + last[INSERT].length)
-            new_operation[new_operation.length - 1] = {
-              INSERT => inject(last[INSERT], component[POSITION] - last[POSITION], component[INSERT]),
-              POSITION => last[POSITION]
-            }
-          elsif last[DELETE] && component[DELETE] && component[POSITION] <= last[POSITION] && last[POSITION] <= (component[POSITION] + component[DELETE].length)
-            new_operation[new_operation.length - 1] = {
-              DELETE => inject(component[DELETE], last[POSITION] - component[POSITION], last[DELETE]),
-              POSITION => component[POSITION]
-            }
-          else
-            new_operation.push component
-          end
-        end
-      rescue StandardError => e
-        raise component.inspect
-      end
 
       def transform_position(position, component, insert_after=false)
         if component[INSERT]
