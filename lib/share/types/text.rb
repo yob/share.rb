@@ -51,18 +51,20 @@ module Share
           raise ArgumentError.new("type must be 'left' or 'right'")
         end
 
-        return left_operations if right_operations.length == 0
-
-        if left_operations.length == 1 && right_operations.length == 1
-          return transform_component [], left_operations.first, right_operations.first, type
-        end
-
-        if type == LEFT
+        if right_operations.length == 0
+          left_operations
+        elsif right_operations.length == 0
+          right_operations
+        elsif left_operations.length == 1 && right_operations.length == 1
+          transform_component [], left_operations.first, right_operations.first, type
+        elsif type == LEFT
           transformation = transform_x(left_operations, right_operations)
           transformation.first
-        else
+        elsif type == RIGHT
           transformation = transform_x(right_operations, left_operations)
           transformation.last
+        else
+          raise "This should never happen"
         end
       end
 
