@@ -31,7 +31,7 @@ module Share
     end
 
     def get_snapshot(id)
-      get(id).get_snapshot      
+      get(id).get_snapshot
     end
 
     def subscribe(id, at_version, listener)
@@ -65,8 +65,8 @@ module Share
 
         begin
           operations.each do |_operation|
-            if _operation.meta[:source] && 
-                _operation.dup_if_source && 
+            if _operation.meta[:source] &&
+                _operation.dup_if_source &&
                 _operation.dup_if_source.includes?(_operation.meta[:source])
 
               raise "Op alread submitted"
