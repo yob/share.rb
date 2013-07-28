@@ -59,7 +59,7 @@ module Share
     end
 
     def version
-      @data[:version]
+      @data[:v]
     end
 
     private
