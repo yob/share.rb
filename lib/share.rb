@@ -1,4 +1,3 @@
-require "thread_safe"
 require "thread"
 
 module Share

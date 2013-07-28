@@ -1,3 +1,5 @@
+require "thread_safe"
+
 module Share
   class Repo
 
