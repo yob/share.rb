@@ -4,10 +4,10 @@ module Share
   class Document
     attr_reader :id
 
-    def initialize(id)
+    def initialize(id, type = nil)
       @id = id
       @ops = []
-      @type = Share::Types::Text.new
+      @type = type || Share::Types::Text.new
     end
 
     def version
