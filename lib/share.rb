@@ -7,9 +7,7 @@ module Share
   require "share/message"
   require "share/protocol"
   require "share/document"
-
   require "share/repo"
-  require "share/adapter/abstract"
 
   require "share/types/text"
 end

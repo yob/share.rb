@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-class TestAdapter < Share::Adapter::Abstract::Document
+class TestAdapter
   def self.create!(name, type, meta)
     new \
       doc: name,
