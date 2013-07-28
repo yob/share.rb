@@ -9,17 +9,5 @@ module Share
       @current_document = nil
     end
 
-    def message_for_operation(operation)
-      {
-        doc: @current_document,
-        v: operation[:v],
-        op: operation[:op],
-        meta: operation[:meta]
-      }
-    end
-
-    def handshake
-      {auth: @session.id}
-    end
   end
 end
