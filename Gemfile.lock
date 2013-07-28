@@ -2,7 +2,6 @@ PATH
   remote: .
   specs:
     share (0.0.5)
-      activesupport (~> 3.2.0)
       thin (~> 1.4.1)
       thread_safe (~> 0.0.3)
       websocket-rack (~> 0.4.0)
