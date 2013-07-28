@@ -32,7 +32,7 @@ module Share
     # Rack::WebSocket callback
     def on_message(env, raw_message)
       message = Message.new(raw_message)
-      response = @protocol.handle_message(message)
+      response = @session.handle_message(message)
       send_data response if response
     end
 
