@@ -12,6 +12,7 @@ module Share
       @ops = []
       @type = type || "text"
       @transformer = type_string_to_instance(@type)
+      @observers = []
     end
 
     def version
@@ -37,6 +38,7 @@ module Share
       end
 
       @ops << op
+      notify_observers(op)
     end
 
     # return the value of the document at a given version. If no specific
@@ -53,7 +55,21 @@ module Share
     # * subscribe
     # * unsubscribe
 
+    def add_observer(observer)
+      @observers << observer
+    end
+
+    def delete_observer(observer)
+      @observers.delete(observer)
+    end
+
     private
+
+    def notify_observers(operation)
+      @observers.each do |observer|
+        observer.on_operation(operation)
+      end
+    end
 
     def get_ops(from_version, to_version)
       if from_version.to_i == to_version.to_i
