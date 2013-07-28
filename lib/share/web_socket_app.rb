@@ -22,6 +22,8 @@ module Share
     def on_open(env)
       @session = Share::Session.new(@repo)
       send_data @session.handshake_response
+    rescue Exception => e
+      log "on_open_exception: #{e.inspect}"
     end
 
     # Rack::WebSocket callback
@@ -32,8 +34,11 @@ module Share
     # Rack::WebSocket callback
     def on_message(env, raw_message)
       message = Message.new(raw_message)
+      log "C: #{message.inspect}"
       response = @session.handle_message(message)
       send_data response if response
+    rescue Exception => e
+      log "on_message_exception: #{e.inspect}"
     end
 
     # update via observable
@@ -45,7 +50,13 @@ module Share
     private
 
     def send_data(message)
+      log "S: #{message.inspect}"
       super JSON.dump(message)
     end
+
+    def log(msg)
+      puts msg
+    end
+
   end
 end

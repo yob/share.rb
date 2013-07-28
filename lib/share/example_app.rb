@@ -5,6 +5,10 @@ module Share
   # a tiny sinatra app used for the demo
   #
   class ExampleApp < Sinatra::Base
+    configure :production, :development do
+      enable :logging
+    end
+
     set :public_folder, File.dirname(__FILE__) + '/static'
 
     get "/" do
