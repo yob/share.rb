@@ -38,7 +38,7 @@ module Share
     end
 
     def type
-      Share::Types::Text.new
+      @data[:type]
     end
 
     def create?
