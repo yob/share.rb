@@ -77,14 +77,14 @@ module Share
     # Call by documents to notify other users of new operations
     #
     def on_operation(doc_id, version, operation)
-      # TODO skip notifying if the operation was made by this session
-      # return if operation[:meta] && operation[:meta]["source"] == @session.id
+      return if operation.meta[:source] == @id
       @current_document = doc_id if @current_document != doc_id
       @observers.each do |observer|
         response = {
           doc: @current_document,
           v: version,
-          op: operation,
+          op: operation.op,
+          meta: operation.meta
         }
         observer.on_operation(response)
       end
