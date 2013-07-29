@@ -148,6 +148,42 @@ describe Share::Message do
       end
     end
   end
+  describe "#auth?" do
+    context "with an auth message" do
+      let!(:data) { JSON.dump(auth: "12345") }
+      let!(:msg) { Share::Message.new(data) }
+
+      it "should return true" do
+        msg.auth?.should be_true
+      end
+    end
+    context "with a non-auth message" do
+      let!(:data) { JSON.dump(doc: "test") }
+      let!(:msg) { Share::Message.new(data) }
+
+      it "should return false" do
+        msg.auth?.should be_false
+      end
+    end
+  end
+  describe "#auth" do
+    context "with an auth message" do
+      let!(:data) { JSON.dump(auth: "12345") }
+      let!(:msg) { Share::Message.new(data) }
+
+      it "should return the auth value" do
+        msg.auth.should == "12345"
+      end
+    end
+    context "with a non-auth message" do
+      let!(:data) { JSON.dump(doc: "test") }
+      let!(:msg) { Share::Message.new(data) }
+
+      it "should return nil" do
+        msg.auth.should be_nil
+      end
+    end
+  end
 
   describe "#operation?" do
     context "with an operation message" do
@@ -167,7 +203,7 @@ describe Share::Message do
       end
     end
   end
-  describe "#operation?" do
+  describe "#operation" do
     context "with an operation message" do
       let!(:data) { JSON.dump(doc: "test", op: {i: 'foo', p: 0}) }
       let!(:msg) { Share::Message.new(data) }

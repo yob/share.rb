@@ -50,6 +50,10 @@ module Share
       @data.has_key?(:auth)
     end
 
+    def auth
+      @data[:auth]
+    end
+
     def operation?
       operation
     end
