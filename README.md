@@ -14,3 +14,12 @@ port of sharejs server to Ruby ( rack/thin )
 ## Browse to
 
     http://localhost:3000/
+
+# TODO
+
+* persistence
+* JSON doc type
+* if client provides a name during auth, add it to meta data of each op
+* browserchannel?
+* puma/threads instead of thin/eventmachine?
+* move example app into a separate gem
