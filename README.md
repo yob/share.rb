@@ -65,6 +65,7 @@ Then open your browser and load:
 
 * persistence
 * JSON doc type
-* if client provides a name during auth, add it to meta data of each op
 * browserchannel?
 * puma/threads instead of thin/eventmachine?
+* provide a way for server administrators to customise the behaviour when
+  a client sends an auth message
