@@ -10,7 +10,7 @@ describe Share::Session do
     repo.create("existingdoc", "text")
   end
 
-  describe "#respond_to" do
+  describe "#handle_message" do
     let(:response) { session.handle_message message }
 
     describe "close message" do
