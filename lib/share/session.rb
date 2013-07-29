@@ -18,7 +18,12 @@ module Share
     end
 
     def handle_message(message)
-      return if message.auth?
+      if message.auth?
+        # TODO we should provide a way for the server administrator to configure
+        #      auth behaviour.
+        @name = message.auth
+        return
+      end
 
       @current_document = message.document if message.document
 
@@ -105,6 +110,7 @@ module Share
       # TODO: operations should store metadata
       doc = @repo.get(document_id)
       meta = {source: @id}
+      meta[:creator] = @name if @name
       doc.apply_op(message.version, message.operation, meta)
     end
 

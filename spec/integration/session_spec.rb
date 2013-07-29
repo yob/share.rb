@@ -13,6 +13,16 @@ describe Share::Session do
   describe "#handle_message" do
     let(:response) { session.handle_message message }
 
+    describe "auth message" do
+      let(:message_data) do
+        { auth: "1234"}
+      end
+
+      it "returns nil" do
+        response.should be_nil
+      end
+    end
+
     describe "close message" do
       let(:message_data) do
         { doc: "test", open: false}
