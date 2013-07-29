@@ -28,8 +28,11 @@ Then create a textarea to attach to a share.rb document:
 Finally, attach the textarea:
 
     <script>
-        var socketUri = 'ws://' + document.location.host + '/socket';
-        sharejs.open('document-id', 'text', socketUri, function(error, doc) {
+        var options = {
+          origin = 'ws://' + document.location.host + '/socket',
+          authentication: '123456'
+        }
+        sharejs.open('document-id', 'text', options, function(error, doc) {
           var elem = document.getElementById('pad');
           doc.attach_textarea(elem);
         });
@@ -39,6 +42,10 @@ Finally, attach the textarea:
 At this stage, websockets is the only transport protocol supported, which means
 you will need to use a modern-ish client. Hopefully browserchannel will be an
 option soon, adding support for all major browsers.
+
+The value for authentication can be anything you like. At this stage the server
+ignores it, but eventually the server will be configurable to accept or deny the
+connection.
 
 ## Demo
 
