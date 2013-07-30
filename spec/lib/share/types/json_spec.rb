@@ -29,7 +29,7 @@ describe Share::Types::JSON do
 
       right = [{'p' => [],'od' => 0,'oi' => 15},{'p' => [],'na' => 4},{'p' => [],'na' => 1},{'p' => [],'na' => 1}]
       left = [{'p' => [],'na' => 4},{'p' => [],'na' => -1}]
-      
+
       right_ = json.transform(right, left, 'left')
       left_ = json.transform(left, right, 'right')
 
@@ -45,13 +45,13 @@ describe Share::Types::JSON do
     it 'applies' do
       json.apply('a', [{'p' => [1], 'si' => 'bc'}]).should == 'abc'
       json.apply('abc', [{'p' => [0], 'sd' => 'a'}]).should == 'bc'
-      json.apply({'x' => 'a'}, [{'p' => ['x', 1], 'si' => 'bc'}]).should == {'x' => 'abc'}      
+      json.apply({'x' => 'a'}, [{'p' => ['x', 1], 'si' => 'bc'}]).should == {'x' => 'abc'}
     end
 
     it 'splits deletes w/transform' do
       json.transform([{'p' => [0], 'sd' => 'ab'}], [{'p' => [1], 'si' => 'x'}], 'left').should ==  [{'p' => [0], 'sd' => 'a'}, {'p' => [1], 'sd' => 'b'}]
     end
-    
+
     it 'deletes cancel each other out' do
       json.transform([{'p' => ['k', 5], 'sd' => 'a'}], [{'p' => ['k', 5], 'sd' => 'a'}], 'left').should == []
     end
@@ -315,7 +315,7 @@ describe Share::Types::JSON do
       json.transform([{'p' => [],'od' => ['']},{'p' => [],'oi' => {}}], [{'p' => [],'od' => ['']},{'p' => [],'oi' => nil}], 'left').should == [{'p' => [],'od' => nil ,'oi' =>{}}]
       json.transform([{'p' => [],'od' => [''],'oi' => {}}], [{'p' => [],'od' => [''],'oi' => nil}], 'right').should == []
       json.transform([{'p' => [],'od' => [''],'oi' => {}}], [{'p' => [],'od' => [''],'oi' => nil}], 'left').should == [{'p' => [],'od' => nil,'oi' => {}}]
-    
+
       # test diamond property
       rightOps = [ {"p" => [],"od" => nil,"oi" => {}} ]
       leftOps = [ {"p" => [],"od" => nil,"oi" => ""} ]
