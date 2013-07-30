@@ -187,16 +187,6 @@ module Share
         end
       end
 
-      def compose(left, right)
-        check_valid_operation left
-        check_valid_operation right
-
-        new_op = clone left
-        right.each { |component| _append new_op, component }
-
-        new_op
-      end
-
       def normalize(operation)
         new_op = []
         operation = [operation] unless operation.is_a?(Array)

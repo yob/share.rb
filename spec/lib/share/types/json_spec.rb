@@ -4,10 +4,6 @@ describe Share::Types::JSON do
   let!(:json) { Share::Types::JSON.new }
 
   context "sanity" do
-    it 'compose od,oi --> od+oi' do
-      json.compose([{'p' => ['foo'],'od' => 1}],[{'p' => ['foo'],'oi' => 2}]).should == [{'p' => ['foo'], 'od' => 1, 'oi' => 2}]
-      json.compose([{'p' => ['foo'],'od' => 1}],[{'p' => ['bar'],'oi' => 2}]).should == [{'p' => ['foo'], 'od' => 1},{'p' => ['bar'], 'oi' => 2}]
-    end
 
     it 'returns sane values for transform' do
       check = proc do |left, right|
@@ -25,11 +21,6 @@ describe Share::Types::JSON do
     it "adds numbers" do
       json.apply(1, [{'p' => [], 'na' => 2}]).should == 3
       json.apply([1], [{'p' => [0], 'na' => 2}]).should == [3]
-    end
-
-    it "Compose two adds together with the same path compresses them" do
-      json.compose([{'p' => ['a', 'b'], 'na' => 1}], [{'p' => ['a', 'b'], 'na' => 2}]).should == [{'p' => ['a', 'b'], 'na' => 3}]
-      json.compose([{'p' => ['a'], 'na' => 1}], [{'p' => ['b'], 'na' => 2}]).should == [{'p' => ['a'], 'na' => 1}, {'p' => ['b'], 'na' => 2}]
     end
 
     it "make sure append doesn't overwrite values when it merges number add" do
@@ -120,13 +111,11 @@ describe Share::Types::JSON do
     end
 
     it 'Inserting then deleting an element composes into a no-op' do
-      json.compose([{'p' => [1], 'li' => 'abc'}], [{'p' => [1], 'ld' => 'abc'}]).should == []
       json.transform([{'p' => [0],'ld' =>nil,'li'=>"x"}], [{'p' => [0],'li' => "The"}], 'right').should == [{'p' => [1],'ld'=>nil,'li' => 'x'}]
     end
 
     it 'Composing doesn\'t change the original object' do
       a = [{'p' => [0],'ld' => 'abc', 'li' => nil}]
-      json.compose(a, [{'p' => [0],'ld' => nil}]).should == [{'p' => [0],'ld' => 'abc'}]
       a.should == [{'p' => [0],'ld' => 'abc', 'li' => nil}]
     end
 
@@ -189,10 +178,6 @@ describe Share::Types::JSON do
     it 'replacement vs. replacement' do
       json.transform([{'p' => [0],'ld' => nil,'li' => []}], [{'p' => [0],'ld' => nil,'li' => 0}], 'right').should == []
       json.transform([{'p' => [0],'ld' => nil,'li' => 0}], [{'p' => [0],'ld' => nil,'li' => []}], 'left').should == [{'p' => [0],'ld' => [],'li' => 0}]
-    end
-
-    it 'composing replace with delete of replaced element results in insert' do
-      json.compose([{'p' => [2],'ld' => [],'li'=>nil}], [{'p' => [2],'ld' => nil}]).should == [{'p' => [2],'ld' => []}]
     end
 
     it 'list move vs list move' do
