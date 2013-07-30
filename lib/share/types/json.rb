@@ -295,9 +295,7 @@ module Share
               text_component = convert.call(component)
               text_other = convert.call(other)
 
-              result = []
-              # TODO fix this
-              Text.new.send :transform_component, result, text_component, text_other, type
+              result = Text.new.transform([text_component], [text_other], type)
               for text_component in result
                 jc = { PATH => component_path.slice(0, common) }
                 jc[PATH].push text_component[PATH]
