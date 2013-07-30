@@ -187,13 +187,6 @@ module Share
         end
       end
 
-      def normalize(operation)
-        new_op = []
-        operation = [operation] unless operation.is_a?(Array)
-        operation.each { |component| _append new_op, component }
-        new_op
-      end
-
       # needs to be a deep clone of the operation
       def clone(value)
         if value.is_a?(Hash)
