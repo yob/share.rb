@@ -116,6 +116,11 @@ describe Share::Document do
         end
       end
     end
+
+    # Test a few baasic JSON document ops here to ensure everything is wired up
+    # correctly. For more detailed specs with JSON operations, check the JSON
+    # type specs
+    #
     context "with a json document" do
       let!(:doc) { Share::Document.new("foo", "json") }
 
@@ -126,9 +131,37 @@ describe Share::Document do
         end
 
         it "should return the correct snapshot" do
+          doc.snapshot.should be_nil
+        end
+      end
+      context "with an object insert op" do
+        before do
+          doc.apply_op(0, {'oi' =>{}, 'p' => []})
+        end
+
+        it "should increment the version" do
+          doc.version.should == 1
+        end
+
+        it "should return the correct value" do
           doc.snapshot.should == {}
         end
       end
+      context "with two object insert ops" do
+        before do
+          doc.apply_op(0, {'oi' =>{}, 'p' => []})
+          doc.apply_op(1, {'oi' =>"bar", 'p' => ["foo"]})
+        end
+
+        it "should increment the version" do
+          doc.version.should == 2
+        end
+
+        it "should return the correct value" do
+          doc.snapshot.should == {"foo" => "bar"}
+        end
+      end
+
     end
 
   end

@@ -97,7 +97,7 @@ module Share
     def default_snapshot
       case @type
       when "text" then ""
-      when "json" then {}
+      when "json" then nil
       else
         raise UnsupportedTypeError, "Unsupported type '#{@type}'"
       end
