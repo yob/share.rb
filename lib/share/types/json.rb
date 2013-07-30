@@ -22,11 +22,6 @@ module Share
       class InvalidStringDelete < ArgumentError; end
       class InvalidStringInsert < ArgumentError; end
 
-      def logger
-        require 'logger'
-        Logger.new("/dev/null")
-      end
-
       def invert_component(component)
         inverted = {
           PATH => component_path
@@ -65,7 +60,6 @@ module Share
 
         container = { data: clone(snapshot) }
 
-        logger.debug ["apply", snapshot, operation]
         operation.each_with_index do |component, index|
           parent = nil
           parentkey = nil
@@ -78,7 +72,6 @@ module Share
           for segment in component_path
             parent = elem
             parentkey = key
-            logger.debug [:segment_component_path, elem, key, elem[key]]
             elem = elem[key]
             key = segment
 
@@ -86,7 +79,6 @@ module Share
           end
 
           if component[NUMBER_ADD]
-            logger.debug ["number add", component, "=>", elem]
             number = component[NUMBER_ADD]
             raise InvalidNumberAddElement.new([number, path]) unless number.is_a?(Fixnum)
             elem[key] += number
@@ -94,13 +86,10 @@ module Share
           elsif component[STRING_INSERT]
             string = component[STRING_INSERT]
             raise InvalidStringInsert.new(string, path) unless string.is_a?(String)
-            logger.debug [:component_string_insert, parent, elem, parentkey]
             parent[parentkey] = elem[0, key] + string + elem[key, elem.length]
-            logger.debug [:after_component_string_insert, parent, elem, parentkey]
 
           elsif component[STRING_DELETE]
             string = component[STRING_DELETE]
-            logger.debug [:component_string_delete, component, string]
             raise InvalidStringDelete.new([string, path]) unless string.is_a?(String)
             unless elem[key, key + string.length] == string
               raise DeletedStringDoesNotMatch.new([string, elem, path])
@@ -147,7 +136,6 @@ module Share
           end
         end
 
-        logger.debug [:container, container]
         container[:data]
       # rescue
       #   # TODO: Roll back all already applied changes. Write tests before implementing this code.
@@ -169,8 +157,6 @@ module Share
       end
 
       def _append(destination, component)
-        logger.debug ["append!", destination, component]
-        logger.debug caller.first
         component = clone component
 
         last = destination.last
@@ -235,17 +221,14 @@ module Share
       end
 
       def common_path(left, right)
-        logger.debug [:common_path, left, right]
         left = left.dup unless left.is_a?(Fixnum) || left == nil
         right = right.dup unless right.is_a?(Fixnum) || right == nil
 
         left.unshift 'data'
         right.unshift 'data'
 
-        logger.debug ["p1/p2", left, right]
         left = left.slice 0, left.length - 1
         right = right.slice 0, right.length - 1
-        logger.debug ["p1/p2", left, right]
 
         return -1 if right.length == 0
 
@@ -260,7 +243,6 @@ module Share
 
       # transform component so it applies to a document with 'other' applied
       def transform_component(destination, component, other, type)
-        logger.debug [:transform_component, destination, component, other, type]
         component = clone component
 
         component_path = component[PATH]
@@ -269,11 +251,8 @@ module Share
         component_path.push(0) if component[NUMBER_ADD]
         other_path.push(0) if other[NUMBER_ADD]
 
-        logger.debug [:paths, component_path, other_path]
         common = common_path component_path, other_path
         common2 = common_path other_path, component_path
-
-        logger.debug [:common, common, common2]
 
         component_path_length = component_path.length
         other_path_length = other_path.length
@@ -282,7 +261,6 @@ module Share
         other_path.pop if other[NUMBER_ADD]
 
         if other.key?(NUMBER_ADD)
-          logger.debug [:other_number_add]
           if common2 && other_path_length >= component_path_length && (common2 == -1 || other_path[common2] == component[common2])
             if component.key?(LIST_DELETE)
               other_clone = clone other
@@ -300,7 +278,6 @@ module Share
         end
 
         if common2 && other_path_length > component_path_length && (common2 == -1 || component_path[common2] == other_path[common2])
-          logger.debug [:common2]
           if component.key?(LIST_DELETE)
             other_clone = clone other
             other_clone[PATH] = other_clone[PATH][component_path_length, other_clone[PATH].length]
@@ -313,14 +290,11 @@ module Share
         end
 
         if common
-          logger.debug "IT IS COMMON!"
-
           common_operand = component_path_length == other_path_length
           if other.key?(NUMBER_ADD)
             # this case is handled above due to icky path hax
 
           elsif other.key?(STRING_INSERT) || other.key?(STRING_DELETE)
-            logger.debug [:string_pass_through, component, other]
             # String op vs string op - pass through to text type
             if !component[STRING_INSERT]  || !component_path_length[STRING_DELETE]
               raise "must be a string?" unless common_operand
@@ -339,13 +313,10 @@ module Share
               text_other = convert.call(other)
 
               result = []
-              logger.debug ["converted", result, text_component, text_other]
               # TODO fix this
               Text.new.send :transform_component, result, text_component, text_other, type
-              logger.debug ["_tcd", result, text_component, text_other]
               for text_component in result
                 jc = { PATH => component_path.slice(0, common) }
-                logger.debug [:jc, jc]
                 jc[PATH].push text_component[PATH]
                 jc[STRING_INSERT] = text_component[Text::INSERT] if text_component[Text::INSERT]
                 jc[STRING_DELETE] = text_component[Text::DELETE] if text_component[Text::DELETE]
@@ -390,28 +361,21 @@ module Share
             end
 
           elsif other.key?(LIST_DELETE)
-            logger.debug "OTHER LIST DELETE"
             if component.key?(LIST_MOVE)
               if common_operand
                 return destination if common == -1 || other_path[common] == component_path[common]
                 _path = other_path[common]
                 from = component_path[common]
                 to = component[LIST_MOVE]
-                logger.debug [:co, _path, from, to]
                 if _path < to || (_path == to && from < to)
-                  logger.debug component
-                  logger.debug "c.lm--"
                   component[LIST_MOVE] -= 1
-                  logger.debug component
                 end
               end
             end
 
-            logger.debug [other_path, component_path, common]
             if other_path[common] < component_path[common]
               component[PATH][common] -= 1
             elsif common == -1 || other_path[common] == component_path[common]
-              logger.debug "COMMON MATCHES"
               if other_path_length < component_path_length
                 # we're below the deleted element, so noop
                 return destination
@@ -427,11 +391,8 @@ module Share
             end
 
           elsif other.key?(LIST_MOVE)
-            logger.debug [:list_move]
-            logger.debug [component[LIST_INSERT], !component[LIST_DELETE], common_operand]
             if component.key?(LIST_MOVE) && component_path_length == other_path_length
               # list move vs list move, here we go!
-              logger.debug ["LIST MOVE BATTLE", component_path, other_path]
               from = component_path[common]
               to = component[LIST_MOVE]
               other_from = other_path[common]
@@ -488,7 +449,6 @@ module Share
 
             elsif component.key?(LIST_INSERT) && !component.key?(LIST_DELETE) && common_operand
               # li
-              logger.debug [:insert_and_move]
               from = other_path[common]
               to = other[LIST_MOVE]
               _path = component_path[common]
@@ -504,28 +464,21 @@ module Share
               to = other[LIST_MOVE]
               _path = component_path[common]
 
-              logger.debug ["ELSE", from, to, _path]
               if _path == from
                 component_path[common] = to
               else
                 if _path > from
                   component_path[common] -= 1 
                 end
-                logger.debug "HERE"
                 if _path > to
                   component_path[common] += 1
                 elsif _path == to
-                  logger.debug ["HERE", from, to]
                   component_path[common] += 1 if from > to
                 end
               end
             end
 
           elsif other.key?(OBJECT_INSERT) && other.key?(OBJECT_DELETE)
-            logger.debug "INS/DEL"
-            logger.debug [component_path, other_path, common]
-            logger.debug [component_path[common] == other_path[common]]
-            logger.debug [component_path[common], other_path[common]]
 
             if common == -1 || component_path[common] == other_path[common]
               if component.key?(OBJECT_INSERT) && common_operand
@@ -539,22 +492,16 @@ module Share
               else
                 # noop if the other component is deleting the same object
                 # (or any parent)
-                logger.debug "RETURN DEST #{destination}"
                 return destination
               end
             end
-            logger.debug "EXITED!"
           elsif other.key?(OBJECT_INSERT)
-            logger.debug [:other_object_insert]
             if component.key?(OBJECT_INSERT) && (common == -1 || component_path[common] == other_path[common])
-              logger.debug ["MAY SHORT!", type, LEFT]
               # left wints if we try to insert at the same place
               if type == LEFT
                 _append destination,
                   PATH => component_path, OBJECT_DELETE => other[OBJECT_INSERT]
               else
-                logger.debug "short circuit"
-                # logger.debug caller * "\n"
                 return destination
               end            
             end
@@ -571,7 +518,6 @@ module Share
           end
         end 
 
-        logger.debug ["appending", destination, component]
         _append destination, component
         return destination
 
