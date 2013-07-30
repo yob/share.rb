@@ -4,8 +4,6 @@ module Share
   module Types
     class JSON < Base
 
-      Text = ::Share::Types::Text
-
       PATH = 'p'
       STRING_INSERT = 'si'
       STRING_DELETE = 'sd'
