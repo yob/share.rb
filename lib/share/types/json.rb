@@ -103,7 +103,7 @@ module Share
           elsif component[LIST_INSERT]
             check_list elem
             elem[key, 0] = component[LIST_INSERT]
-          
+
           elsif component[LIST_DELETE]
             check_list elem
             elem[key, 1] = nil
@@ -123,7 +123,7 @@ module Share
           elsif component[OBJECT_INSERT]
             # Object insert / replace
             check_object elem
-            
+
             # Should check that elem[key] == component.od
             elem[key] = component[OBJECT_INSERT]
 
@@ -286,7 +286,7 @@ module Share
             other_clone = clone other
             other_clone[PATH] = other_clone[PATH][component_path_length, other_clone[PATH].length]
             component[OBJECT_DELETE] = apply clone(component[OBJECT_DELETE]), [other_clone]
-          end    
+          end
         end
 
         if common
@@ -346,12 +346,12 @@ module Share
 
           elsif other.key?(LIST_INSERT)
             if component.key?(LIST_INSERT) && !component.key?(LIST_DELETE) && common_operand && (common == -1 || component_path[common] == other_path[common])
-              # in li vs. li, left wins          
+              # in li vs. li, left wins
               component_path[common] += 1 if type == RIGHT
             elsif other_path[common] <= component_path[common]
               component_path[common] += 1
             end
-            
+
             if component.key?(LIST_MOVE)
               if common_operand
                 # otherC edits the same list we edit
@@ -468,7 +468,7 @@ module Share
                 component_path[common] = to
               else
                 if _path > from
-                  component_path[common] -= 1 
+                  component_path[common] -= 1
                 end
                 if _path > to
                   component_path[common] += 1
@@ -503,7 +503,7 @@ module Share
                   PATH => component_path, OBJECT_DELETE => other[OBJECT_INSERT]
               else
                 return destination
-              end            
+              end
             end
 
           elsif other.key?(OBJECT_DELETE)
@@ -516,7 +516,7 @@ module Share
               end
             end
           end
-        end 
+        end
 
         _append destination, component
         return destination
