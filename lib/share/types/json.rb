@@ -1,7 +1,8 @@
+require 'share/types/base'
+
 module Share
   module Types
-    module JSON
-      extend self
+    class JSON < Base
 
       Text = ::Share::Types::Text
 
@@ -22,7 +23,8 @@ module Share
       class InvalidStringInsert < ArgumentError; end
 
       def logger
-        Share.logger
+        require 'logger'
+        Logger.new("/dev/null")
       end
 
       def invert_component(component)
@@ -338,7 +340,8 @@ module Share
 
               result = []
               logger.debug ["converted", result, text_component, text_other]
-              Text.transform_component result, text_component, text_other, type
+              # TODO fix this
+              Text.new.send :transform_component, result, text_component, text_other, type
               logger.debug ["_tcd", result, text_component, text_other]
               for text_component in result
                 jc = { PATH => component_path.slice(0, common) }
