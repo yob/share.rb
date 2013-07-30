@@ -20,38 +20,6 @@ module Share
       class InvalidStringDelete < ArgumentError; end
       class InvalidStringInsert < ArgumentError; end
 
-      def invert_component(component)
-        inverted = {
-          PATH => component_path
-        }
-
-        inverted[STRING_DELETE] = component[STRING_INSERT] if component[STRING_INSERT]
-        inverted[STRING_INSERT] = component[STRING_DELETE] if component[STRING_DELETE]
-        inverted[OBJECT_DELETE] = component[OBJECT_INSERT] if component[OBJECT_INSERT]
-        inverted[OBJECT_INSERT] = component[OBJECT_DELETE] if component[OBJECT_DELETE]
-        inverted[LIST_DELETE] = component[LIST_INSERT] if component[LIST_INSERT]
-        inverted[LIST_INSERT] = component[LIST_DELETE] if component[LIST_DELETE]
-        inverted[NUMBER_ADD] = -1 * component[NUMBER_ADD] if component[NUMBER_ADD]
-        if component[LIST_MOVE]
-          inverted[LIST_MOVE] = component_path[component_path.length - 1]
-          inverted[PATH] = component_path[0, component_path.length - 1] << component[LIST_MOVE]
-        end
-
-        inverted
-      end
-
-      def invert(operation)
-        operation.reverse.map { |component| invert_component(component) }
-      end
-
-      def check_valid_operation(operation)
-        # no-op
-      end
-
-      def check_list(object)
-        true
-      end
-
       def apply(snapshot, operation)
         check_valid_operation(operation)
         operation = clone operation
@@ -137,6 +105,40 @@ module Share
         container[:data]
       # rescue
       #   # TODO: Roll back all already applied changes. Write tests before implementing this code.
+      end
+
+      private
+
+      def invert_component(component)
+        inverted = {
+          PATH => component_path
+        }
+
+        inverted[STRING_DELETE] = component[STRING_INSERT] if component[STRING_INSERT]
+        inverted[STRING_INSERT] = component[STRING_DELETE] if component[STRING_DELETE]
+        inverted[OBJECT_DELETE] = component[OBJECT_INSERT] if component[OBJECT_INSERT]
+        inverted[OBJECT_INSERT] = component[OBJECT_DELETE] if component[OBJECT_DELETE]
+        inverted[LIST_DELETE] = component[LIST_INSERT] if component[LIST_INSERT]
+        inverted[LIST_INSERT] = component[LIST_DELETE] if component[LIST_DELETE]
+        inverted[NUMBER_ADD] = -1 * component[NUMBER_ADD] if component[NUMBER_ADD]
+        if component[LIST_MOVE]
+          inverted[LIST_MOVE] = component_path[component_path.length - 1]
+          inverted[PATH] = component_path[0, component_path.length - 1] << component[LIST_MOVE]
+        end
+
+        inverted
+      end
+
+      def invert(operation)
+        operation.reverse.map { |component| invert_component(component) }
+      end
+
+      def check_valid_operation(operation)
+        # no-op
+      end
+
+      def check_list(object)
+        true
       end
 
       def check_object(_object)
