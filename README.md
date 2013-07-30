@@ -64,7 +64,6 @@ Then open your browser and load:
 ## TODO
 
 * persistence
-* JSON doc type
 * browserchannel?
 * puma/threads instead of thin/eventmachine?
 * provide a way for server administrators to customise the behaviour when
