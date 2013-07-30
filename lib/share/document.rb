@@ -50,7 +50,7 @@ module Share
     def snapshot(at_version = nil)
       at_version ||= self.version
       ops = get_ops(0, at_version).map(&:op).flatten
-      @transformer.apply("", ops)
+      @transformer.apply(default_snapshot, ops)
     end
 
     # These are methods that were originally on Repo and will probably need to
@@ -88,11 +88,20 @@ module Share
     def type_string_to_instance(str)
       case str
       when "text" then Share::Types::Text.new
+      when "json" then Share::Types::JSON.new
       else
         raise UnsupportedTypeError, "Unsupported type '#{str}'"
       end
     end
 
+    def default_snapshot
+      case @type
+      when "text" then ""
+      when "json" then {}
+      else
+        raise UnsupportedTypeError, "Unsupported type '#{@type}'"
+      end
+    end
 
   end
 end
