@@ -9,5 +9,6 @@ module Share
   require "share/types/text"
   require "share/types/json"
 
+  require "share/bc_app"
   require "share/web_socket_app"
 end
